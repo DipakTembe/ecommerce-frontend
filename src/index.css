@@ -1,0 +1,22 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.slick-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.slick-prev,
+.slick-next {
+  color: #fff; /* Adjust color */
+  font-size: 2rem; /* Adjust size */
+}
+.slick-dots li button:before {
+  color: #fff; /* Customize dot color */
+}
+
+html {
+  scroll-behavior: smooth;
+}
