@@ -33,7 +33,9 @@ const App = () => {
     const fetchProductData = async () => {
       try {
         // Directly hardcoding the backend URL (for testing)
-        const response = await axios.get("http://localhost:5001/api/products"); // Full URL to the backend
+        const apiBaseURL = process.env.REACT_APP_API_BASE_URL;
+        const response = await axios.get(`${apiBaseURL}/api/products`);
+
         if (Array.isArray(response.data)) {
           setProductData(response.data); // Set product data if valid
         } else {
