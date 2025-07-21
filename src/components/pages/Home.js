@@ -9,10 +9,12 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const apiBaseURL = process.env.REACT_APP_API_BASE_URL;
+
   useEffect(() => {
-    axios.get("/api/products")
+    axios.get(`${apiBaseURL}/api/products`)
       .then((response) => {
-        setProducts(response.data);  // ✅ Set the fetched products
+        setProducts(response.data);
       })
       .catch((error) => {
         console.error("Error fetching products:", error);
@@ -21,7 +23,7 @@ const Home = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [apiBaseURL]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -29,8 +31,8 @@ const Home = () => {
   return (
     <div className="home">
       <CarouselBanner />
-      <TopArticles products={products} />  {/* ✅ Pass products as props */}
-      <ImageGallery products={products} />  {/* ✅ Pass products as props */}
+      <TopArticles products={products} />
+      <ImageGallery products={products} />
     </div>
   );
 };

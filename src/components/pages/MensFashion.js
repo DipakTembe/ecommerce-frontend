@@ -16,20 +16,15 @@ const MensFashion = () => {
     const fetchProducts = async () => {
       try {
         const response = await fetch(`${apiBaseURL}/api/products`);
+        if (!response.ok) throw new Error("Failed to fetch products");
         const data = await response.json();
-
-        if (Array.isArray(data) && data.length > 0) {
-          setProductData(data);
-        } else {
-          setError("No products available at the moment.");
-        }
+        setProductData(data);
       } catch (error) {
         setError("Error fetching products: " + error.message);
       } finally {
         setLoading(false);
       }
     };
-
     fetchProducts();
   }, [apiBaseURL]);
 
@@ -43,40 +38,26 @@ const MensFashion = () => {
 
   const handleBrandChange = (brand) => {
     setSelectedBrands((prev) =>
-      prev.includes(brand)
-        ? prev.filter((b) => b !== brand)
-        : [...prev, brand]
+      prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
     );
   };
 
   const handlePriceChange = (price) => {
     setSelectedPrice((prev) =>
-      prev.includes(price)
-        ? prev.filter((p) => p !== price)
-        : [...prev, price]
+      prev.includes(price) ? prev.filter((p) => p !== price) : [...prev, price]
     );
   };
 
   const filteredProducts = useMemo(() => {
-    if (loading || !Array.isArray(productData) || productData.length === 0) {
-      return [];
-    }
-
     return productData.filter((product) => {
       const { category, brand, price, gender } = product;
-
-      if (!category || !brand || !price || !gender) {
-        return false;
-      }
-
+      if (!category || !brand || !price || !gender) return false;
       const matchesCategory = selectedCategories.length
         ? selectedCategories.includes(category)
         : true;
-
       const matchesBrand = selectedBrands.length
         ? selectedBrands.includes(brand)
         : true;
-
       const matchesPrice = selectedPrice.length
         ? selectedPrice.some((range) => {
             switch (range) {
@@ -91,17 +72,15 @@ const MensFashion = () => {
             }
           })
         : true;
-
       const matchesGender = gender === "Mens";
-
       return matchesCategory && matchesBrand && matchesPrice && matchesGender;
     });
-  }, [productData, selectedCategories, selectedBrands, selectedPrice, loading]);
+  }, [productData, selectedCategories, selectedBrands, selectedPrice]);
 
   const categories = useMemo(() => {
-    return Array.from(new Set(productData.map((p) => p.category))).filter(
-      (category) => ["Topwear", "Bottomwear", "Sportswear"].includes(category)
-    );
+    return Array.from(
+      new Set(productData.map((p) => p.category))
+    ).filter((cat) => ["Topwear", "Bottomwear", "Sportswear"].includes(cat));
   }, [productData]);
 
   const mensBrands = useMemo(() => {
@@ -116,7 +95,7 @@ const MensFashion = () => {
   return (
     <div className="container mx-auto px-4 py-8 pt-24 bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100">
       <div className="mb-4 text-lg text-gray-300">
-        <Link to="/" className="text-teal-500 hover:underline">Home</Link> /{" "}
+        <Link to="/" className="text-teal-500 hover:underline">Home</Link> /
         <span className="text-teal-500"> Men's Fashion</span>
       </div>
 
