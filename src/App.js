@@ -16,28 +16,27 @@ import HomeFashion from "./components/pages/HomeFashion";
 import ProductDetails from "./components/pages/ProductDetails";
 import WishlistPage from "./components/pages/WishlistPage";
 import Profile from "./components/pages/Profile";
-import EditProfile from "./components/pages/EditProfile";  // <-- Import EditProfile
+import EditProfile from "./components/pages/EditProfile";
 import CartPage from "./components/pages/CartPage";
-import CheckoutPage from "./components/pages/CheckoutPage"; // Import CheckoutPage
+import CheckoutPage from "./components/pages/CheckoutPage";
 import OrderPage from "./components/pages/OrderPage";
 import "./index.css";
 import axios from "axios";
 import { CartProvider } from "./Context/CartContext";
 
 const App = () => {
-  const [productData, setProductData] = useState([]); // Initialize as empty array
+  const [productData, setProductData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const apiBaseURL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchProductData = async () => {
       try {
-        // Directly hardcoding the backend URL (for testing)
-        const apiBaseURL = process.env.REACT_APP_API_BASE_URL;
         const response = await axios.get(`${apiBaseURL}/api/products`);
-
         if (Array.isArray(response.data)) {
-          setProductData(response.data); // Set product data if valid
+          setProductData(response.data);
         } else {
           console.error("API response is not an array:", response.data);
           setError("Invalid product data received");
@@ -51,22 +50,17 @@ const App = () => {
     };
 
     fetchProductData();
-  }, []);
+  }, [apiBaseURL]);
 
-  if (loading) {
-    return <div>Loading...</div>; // Loading state
-  }
-
-  if (error) {
-    return <div>{error}</div>; // Error state
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <React.StrictMode>
       <CartProvider>
         <Router>
           <ScrollToTop />
-          <Navbar /> {/* Navbar with cart functionality */}
+          <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/signin" element={<SignIn />} />
@@ -74,21 +68,15 @@ const App = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/wishlistPage" element={<WishlistPage />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/profile/edit" element={<EditProfile />} /> {/* Route to EditProfile */}
-            <Route path="/cart" element={<CartPage />} /> {/* CartPage route */}
-            <Route path="/checkout" element={<CheckoutPage />} /> {/* Add route for CheckoutPage */}
+            <Route path="/profile/edit" element={<EditProfile />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/order/:orderId" element={<OrderPage />} />
-            <Route
-              path="/mens-fashion"
-              element={<MensFashion productData={productData} />}
-            />
+            <Route path="/mens-fashion" element={<MensFashion productData={productData} />} />
             <Route path="/womens-fashion" element={<WomensFashion />} />
             <Route path="/kids-fashion" element={<KidsFashion />} />
             <Route path="/home-fashion" element={<HomeFashion />} />
-            <Route
-              path="/product/:id"
-              element={<ProductDetails products={productData} />}
-            />
+            <Route path="/product/:id" element={<ProductDetails products={productData} />} />
           </Routes>
           <Footer />
         </Router>
