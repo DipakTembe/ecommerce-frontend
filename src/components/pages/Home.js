@@ -5,36 +5,32 @@ import ImageGallery from '../organisms/ImageGallery';
 import axios from 'axios';
 
 const Home = () => {
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     axios.get("/api/products")
       .then((response) => {
-        // No need to set products anymore
+        setProducts(response.data);  // ✅ Set the fetched products
       })
       .catch((error) => {
         console.error("Error fetching products:", error);
         setError("Failed to fetch products");
       })
       .finally(() => {
-        setLoading(false); // Stop loading once request is completed
+        setLoading(false);
       });
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>; // Show loading message
-  }
-
-  if (error) {
-    return <div>{error}</div>; // Show error message if fetching fails
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="home">
       <CarouselBanner />
-      <TopArticles />
-      <ImageGallery />
+      <TopArticles products={products} />  {/* ✅ Pass products as props */}
+      <ImageGallery products={products} />  {/* ✅ Pass products as props */}
     </div>
   );
 };
