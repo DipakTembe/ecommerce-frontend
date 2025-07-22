@@ -1,24 +1,23 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5001/api'; // Replace with your API base URL
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001/api';
 
-// Function to get the token from localStorage
-const getToken = () => {
-  return localStorage.getItem('token');
-};
+// Get Token from localStorage
+const getToken = () => localStorage.getItem('token');
 
-// Axios instance for making requests
+// Create Axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// API call with token (for authenticated routes)
-export const apiWithToken = async (url, method = 'GET', data = {}) => {
-  const token = getToken(); // Retrieve token from localStorage
-  
-  if (!token) {
-    throw new Error('No token provided. User must be logged in.');
-  }
+// API call with Token
+export const apiWithToken = async (url, method = 'GET', data = {}, config = {}) => {
+  const token = getToken();
+
+  if (!token) throw new Error('Authentication token is missing. Please log in.');
 
   try {
     const response = await api({
@@ -26,46 +25,41 @@ export const apiWithToken = async (url, method = 'GET', data = {}) => {
       method,
       data,
       headers: {
-        Authorization: `Bearer ${token}`, // Add Bearer token in the Authorization header
+        Authorization: `Bearer ${token}`,
       },
+      ...config,
     });
 
-
-    // Check if response contains success flag
-    if (response.status === 201) {
-      return response;
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
     } else {
-      throw new Error( response.data.message || 'An error occurred in the API.');
+      throw new Error(response.data.message || 'API responded with an unexpected error.');
     }
   } catch (error) {
-    // Cache the failure message if it exists
-    const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
-    localStorage.setItem('apiError', errorMessage); // Store error in localStorage (can be used for later)
-    
-    throw new Error(`Error in API call with token: ${errorMessage}`);
+    const errorMessage = error.response?.data?.message || error.message || 'Unknown API error.';
+    console.error('API With Token Error:', errorMessage);
+    throw new Error(errorMessage);
   }
 };
 
-// API call without token (for public routes)
-export const apiWithoutToken = async (url, method = 'GET', data = {}) => {
+// API call without Token
+export const apiWithoutToken = async (url, method = 'GET', data = {}, config = {}) => {
   try {
     const response = await api({
       url,
       method,
       data,
+      ...config,
     });
 
-    // Check if response contains success flag
-    if (response.data.success) {
+    if (response.status >= 200 && response.status < 300) {
       return response.data;
     } else {
-      throw new Error(response.data.message || 'An error occurred in the API.');
+      throw new Error(response.data.message || 'API responded with an unexpected error.');
     }
   } catch (error) {
-    // Cache the failure message if it exists
-    const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
-    localStorage.setItem('apiError', errorMessage); // Store error in localStorage (can be used for later)
-    
-    throw new Error(`Error in API call without token: ${errorMessage}`);
+    const errorMessage = error.response?.data?.message || error.message || 'Unknown API error.';
+    console.error('API Without Token Error:', errorMessage);
+    throw new Error(errorMessage);
   }
 };

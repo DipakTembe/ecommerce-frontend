@@ -38,9 +38,10 @@ const App = () => {
         if (Array.isArray(response.data)) {
           setProductData(response.data);
         } else {
-          setError("Invalid product data received");
+          throw new Error("Invalid product data received");
         }
       } catch (err) {
+        console.error(err);
         setError("Failed to fetch products");
       } finally {
         setLoading(false);
@@ -60,7 +61,7 @@ const App = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-red-500 text-white text-2xl">
+      <div className="min-h-screen flex items-center justify-center bg-red-600 text-white text-2xl">
         {error}
       </div>
     );
@@ -72,7 +73,7 @@ const App = () => {
         <Router>
           <ScrollToTop />
           <Navbar />
-          <main className="flex-1">
+          <main className="flex-1 pt-16 min-h-screen bg-gray-100">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/signin" element={<SignIn />} />
