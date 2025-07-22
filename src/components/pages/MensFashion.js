@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import ProductGrid from "../molecules/ProductGrid";
 
 const MensFashion = () => {
@@ -10,29 +11,29 @@ const MensFashion = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const apiBaseURL = process.env.REACT_APP_API_BASE_URL;
+  const api = axios.create({
+    baseURL: process.env.REACT_APP_API_BASE_URL,
+  });
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`${apiBaseURL}/api/products`);
-        if (!response.ok) throw new Error("Failed to fetch products");
-        const data = await response.json();
-        setProductData(data);
+        const response = await api.get("/api/products");
+        if (!Array.isArray(response.data)) throw new Error("Invalid product data");
+        setProductData(response.data);
       } catch (error) {
-        setError("Error fetching products: " + error.message);
+        setError("Failed to fetch products. Please try again later.");
+        console.error("Fetch Error:", error);
       } finally {
         setLoading(false);
       }
     };
     fetchProducts();
-  }, [apiBaseURL]);
+  }, [api]);
 
   const handleCategoryChange = (category) => {
     setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((cat) => cat !== category)
-        : [...prev, category]
+      prev.includes(category) ? prev.filter((cat) => cat !== category) : [...prev, category]
     );
   };
 
@@ -51,13 +52,10 @@ const MensFashion = () => {
   const filteredProducts = useMemo(() => {
     return productData.filter((product) => {
       const { category, brand, price, gender } = product;
-      if (!category || !brand || !price || !gender) return false;
-      const matchesCategory = selectedCategories.length
-        ? selectedCategories.includes(category)
-        : true;
-      const matchesBrand = selectedBrands.length
-        ? selectedBrands.includes(brand)
-        : true;
+      if (!category || !brand || price === undefined || !gender) return false;
+
+      const matchesCategory = selectedCategories.length ? selectedCategories.includes(category) : true;
+      const matchesBrand = selectedBrands.length ? selectedBrands.includes(brand) : true;
       const matchesPrice = selectedPrice.length
         ? selectedPrice.some((range) => {
             switch (range) {
@@ -72,21 +70,19 @@ const MensFashion = () => {
             }
           })
         : true;
-      const matchesGender = gender === "Mens";
-      return matchesCategory && matchesBrand && matchesPrice && matchesGender;
+
+      return matchesCategory && matchesBrand && matchesPrice && gender === "Mens";
     });
   }, [productData, selectedCategories, selectedBrands, selectedPrice]);
 
   const categories = useMemo(() => {
-    return Array.from(
-      new Set(productData.map((p) => p.category))
-    ).filter((cat) => ["Topwear", "Bottomwear", "Sportswear"].includes(cat));
+    return Array.from(new Set(productData.map((p) => p.category))).filter((cat) =>
+      ["Topwear", "Bottomwear", "Sportswear"].includes(cat)
+    );
   }, [productData]);
 
   const mensBrands = useMemo(() => {
-    return Array.from(
-      new Set(productData.filter((p) => p.gender === "Mens").map((p) => p.brand))
-    );
+    return Array.from(new Set(productData.filter((p) => p.gender === "Mens").map((p) => p.brand)));
   }, [productData]);
 
   if (loading) return <div className="text-center text-gray-400">Loading products...</div>;
@@ -105,6 +101,7 @@ const MensFashion = () => {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
+        {/* Filters */}
         <div className="w-full lg:w-1/4 bg-gray-800 p-4 rounded-lg shadow-lg">
           <h2 className="text-xl font-bold mb-6 text-center border-b pb-2">Filters</h2>
 
@@ -151,16 +148,13 @@ const MensFashion = () => {
                   onChange={() => handlePriceChange(range)}
                   className="mr-2 accent-teal-500"
                 />
-                {range === "under-5000"
-                  ? "Under ₹5000"
-                  : range === "5000-10000"
-                  ? "₹5000 - ₹10000"
-                  : "Over ₹10000"}
+                {range === "under-5000" ? "Under ₹5000" : range === "5000-10000" ? "₹5000 - ₹10000" : "Over ₹10000"}
               </label>
             ))}
           </div>
         </div>
 
+        {/* Product Grid */}
         <div className="w-full lg:w-3/4">
           {filteredProducts.length === 0 ? (
             <p className="text-center text-gray-400">No products found</p>

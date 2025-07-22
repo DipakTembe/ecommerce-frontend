@@ -1,25 +1,27 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom"; 
-import { FaStar } from "react-icons/fa"; // For displaying the star rating icon
+import { useEffect, useState, useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { FaStar } from "react-icons/fa";
 
 const OrderPage = () => {
   const [orderDetails, setOrderDetails] = useState(null);
-  const [loading, setLoading] = useState(true); // To handle loading state
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { orderId } = useParams(); // Get order ID from URL params
+  const { orderId } = useParams();
 
-  const fallbackImage = "http://localhost:5001/images/default-image.jpg"; // Fallback image URL
+  const fallbackImage = "http://localhost:5001/images/default-image.jpg";
+
+  const storedOrderDetails = useMemo(() => {
+    return JSON.parse(localStorage.getItem("orderDetails"));
+  }, []);
 
   useEffect(() => {
-    const storedOrderDetails = JSON.parse(localStorage.getItem("orderDetails"));
     if (storedOrderDetails && storedOrderDetails._id === orderId) {
-      console.log(storedOrderDetails);
       setOrderDetails(storedOrderDetails);
       setLoading(false);
     } else {
-      navigate("/"); // If no order details found, redirect to homepage
+      navigate("/");
     }
-  }, [orderId, navigate]);
+  }, [orderId, storedOrderDetails, navigate]);
 
   if (loading) {
     return (
@@ -34,64 +36,66 @@ const OrderPage = () => {
       <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-xl space-y-8">
         <h1 className="text-4xl font-semibold text-center text-gray-800">Order Details</h1>
 
-        {/* Order Confirmation */}
         <div className="space-y-6">
           <h2 className="text-2xl text-gray-800 font-semibold">Order ID: {orderDetails._id}</h2>
           <p className="text-xl text-gray-600">Thank you for your purchase! Your order has been placed successfully.</p>
         </div>
 
-        {/* Order Items */}
         <div className="space-y-6">
           <h3 className="text-2xl text-gray-800 font-semibold">Ordered Items</h3>
-          {orderDetails.items.map((item) => (
-            <div
-              key={item._id}
-              className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-md"
-            >
-              <div className="flex items-center space-x-6">
-                <img
-                  src={item.imageUrl || fallbackImage} // Fallback image logic
-                  alt={item.name}
-                  className="w-24 h-24 object-cover rounded-lg shadow-sm"
-                  onError={(e) => {
-                    e.target.onerror = null; // Prevent infinite loop
-                    e.target.src = fallbackImage; // Replace with fallback image if it fails to load
-                  }}
-                />
-                <div>
-                  <p className="text-xl font-medium text-gray-800">{item.name}</p>
-                  <p className="text-lg text-gray-500">₹{item.price.toLocaleString("en-IN")}</p>
-                  <p className="text-sm text-gray-400">Size: {item.size}</p>
-                  <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
-                  <div className="flex items-center mt-2">
-                    <FaStar className="text-yellow-400" /> <span>{item.rating || 0}</span>
+          {orderDetails.items?.length > 0 ? (
+            orderDetails.items.map((item) => (
+              <div
+                key={item._id}
+                className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-md"
+              >
+                <div className="flex items-center space-x-6">
+                  <img
+                    src={item.imageUrl || fallbackImage}
+                    alt={item.name}
+                    className="w-24 h-24 object-cover rounded-lg shadow-sm"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = fallbackImage;
+                    }}
+                  />
+                  <div>
+                    <p className="text-xl font-medium text-gray-800">{item.name}</p>
+                    <p className="text-lg text-gray-500">₹{item.price?.toLocaleString("en-IN")}</p>
+                    {item.size && <p className="text-sm text-gray-400">Size: {item.size}</p>}
+                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                    <div className="flex items-center mt-2">
+                      <FaStar className="text-yellow-400 mr-1" />
+                      <span>{item.rating ? item.rating : "Not Rated"}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="text-center text-gray-500">No items found in this order.</p>
+          )}
         </div>
 
-        {/* Shipping Information */}
         <div className="space-y-6">
           <h3 className="text-2xl text-gray-800 font-semibold">Shipping Information</h3>
-          <div className="space-y-4">
-            <p><strong>Name:</strong> {orderDetails.shippingDetails.name}</p>
-            <p><strong>Email:</strong> {orderDetails.shippingDetails.email}</p>
-            <p><strong>Address:</strong> {orderDetails.shippingDetails.address}</p>
-            <p><strong>Phone:</strong> {orderDetails.shippingDetails.phone}</p>
-            <p><strong>City:</strong> {orderDetails.shippingDetails.city}</p>
-            <p><strong>Zip Code:</strong> {orderDetails.shippingDetails.zipCode}</p>
+          <div className="space-y-2 text-gray-700">
+            <p><strong>Name:</strong> {orderDetails.shippingDetails?.name}</p>
+            <p><strong>Email:</strong> {orderDetails.shippingDetails?.email}</p>
+            <p><strong>Address:</strong> {orderDetails.shippingDetails?.address}</p>
+            <p><strong>Phone:</strong> {orderDetails.shippingDetails?.phone}</p>
+            <p><strong>City:</strong> {orderDetails.shippingDetails?.city}</p>
+            <p><strong>Zip Code:</strong> {orderDetails.shippingDetails?.zipCode}</p>
           </div>
         </div>
 
-        {/* Total Price */}
         <div className="mt-4 flex justify-between items-center">
           <p className="text-lg text-gray-800 font-semibold">Total Price</p>
-          <p className="text-xl text-gray-800 font-semibold">₹{orderDetails.totalPrice.toLocaleString("en-IN")}</p>
+          <p className="text-xl text-gray-800 font-semibold">
+            ₹{orderDetails.totalPrice ? orderDetails.totalPrice.toLocaleString("en-IN") : "0"}
+          </p>
         </div>
 
-        {/* Back to Home Button */}
         <div className="mt-8 flex justify-center">
           <button
             onClick={() => navigate("/")}

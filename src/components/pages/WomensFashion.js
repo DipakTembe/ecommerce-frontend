@@ -13,8 +13,8 @@ const WomensFashion = () => {
 
   // Fetch product data from MongoDB
   useEffect(() => {
-    axios
-      .get('http://localhost:5001/api/products')
+    axios.get(`${process.env.REACT_APP_API_URL}/api/products`)
+
       .then((response) => {
         if (Array.isArray(response.data)) {
           setProducts(response.data);
@@ -59,7 +59,7 @@ const WomensFashion = () => {
   // Memoized filtered products based on selected filters
   const filteredProducts = useMemo(() => {
     if (!Array.isArray(products) || products.length === 0) return [];
-    
+
     return products.filter((product) => {
       const matchesCategory = selectedCategories.length
         ? selectedCategories.includes(product.category)
@@ -69,11 +69,11 @@ const WomensFashion = () => {
         : true;
       const matchesPrice = selectedPrice.length
         ? selectedPrice.some((range) => {
-            if (range === 'under-5000') return product.price < 5000;
-            if (range === '5000-10000') return product.price >= 5000 && product.price <= 10000;
-            if (range === 'over-10000') return product.price > 10000;
-            return false;
-          })
+          if (range === 'under-5000') return product.price < 5000;
+          if (range === '5000-10000') return product.price >= 5000 && product.price <= 10000;
+          if (range === 'over-10000') return product.price > 10000;
+          return false;
+        })
         : true;
       const matchesGender = product.gender === 'Womens'; // Ensure the product is for women
       return matchesCategory && matchesBrand && matchesPrice && matchesGender;
@@ -187,8 +187,8 @@ const WomensFashion = () => {
                   {range === 'under-5000'
                     ? 'Under ₹5000'
                     : range === '5000-10000'
-                    ? '₹5000 - ₹10000'
-                    : 'Over ₹10000'}
+                      ? '₹5000 - ₹10000'
+                      : 'Over ₹10000'}
                 </label>
               ))}
             </div>

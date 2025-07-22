@@ -38,11 +38,9 @@ const App = () => {
         if (Array.isArray(response.data)) {
           setProductData(response.data);
         } else {
-          console.error("API response is not an array:", response.data);
           setError("Invalid product data received");
         }
       } catch (err) {
-        console.error("Error fetching products:", err);
         setError("Failed to fetch products");
       } finally {
         setLoading(false);
@@ -52,8 +50,21 @@ const App = () => {
     fetchProductData();
   }, [apiBaseURL]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-2xl">
+        Loading...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-red-500 text-white text-2xl">
+        {error}
+      </div>
+    );
+  }
 
   return (
     <React.StrictMode>
@@ -61,23 +72,25 @@ const App = () => {
         <Router>
           <ScrollToTop />
           <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/wishlistPage" element={<WishlistPage />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/profile/edit" element={<EditProfile />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/order/:orderId" element={<OrderPage />} />
-            <Route path="/mens-fashion" element={<MensFashion productData={productData} />} />
-            <Route path="/womens-fashion" element={<WomensFashion />} />
-            <Route path="/kids-fashion" element={<KidsFashion />} />
-            <Route path="/home-fashion" element={<HomeFashion />} />
-            <Route path="/product/:id" element={<ProductDetails products={productData} />} />
-          </Routes>
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/wishlistPage" element={<WishlistPage />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile/edit" element={<EditProfile />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/order/:orderId" element={<OrderPage />} />
+              <Route path="/mens-fashion" element={<MensFashion productData={productData} />} />
+              <Route path="/womens-fashion" element={<WomensFashion />} />
+              <Route path="/kids-fashion" element={<KidsFashion />} />
+              <Route path="/home-fashion" element={<HomeFashion />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
+            </Routes>
+          </main>
           <Footer />
         </Router>
       </CartProvider>

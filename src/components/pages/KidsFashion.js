@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import ProductGrid from "../molecules/ProductGrid";
 
 const KidsFashion = () => {
@@ -10,24 +11,25 @@ const KidsFashion = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const apiBaseURL = process.env.REACT_APP_API_BASE_URL;
+  const api = axios.create({
+    baseURL: process.env.REACT_APP_API_BASE_URL,
+  });
 
   useEffect(() => {
-    const fetchProductData = async () => {
+    const fetchProducts = async () => {
       try {
-        const response = await fetch(`${apiBaseURL}/api/products`);
-        if (!response.ok) throw new Error("Failed to fetch products");
-        const data = await response.json();
-        setProductData(data);
+        const response = await api.get("/api/products");
+        if (!Array.isArray(response.data)) throw new Error("Invalid product data");
+        setProductData(response.data);
       } catch (err) {
-        setError("Failed to fetch products: " + err.message);
-        console.error("Error fetching products:", err);
+        setError("Failed to fetch products. Please try again later.");
+        console.error("Fetch Error:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchProductData();
-  }, [apiBaseURL]);
+    fetchProducts();
+  }, [api]);
 
   const handleCategoryChange = (category) => {
     setSelectedCategories((prev) =>
@@ -50,25 +52,25 @@ const KidsFashion = () => {
   const filteredProducts = useMemo(() => {
     return productData.filter((product) => {
       const { category, brand, price, gender } = product;
-      if (!category || !brand || !price || !gender) return false;
+      if (!category || !brand || price === undefined || !gender) return false;
 
-      const matchesCategory = selectedCategories.length
-        ? selectedCategories.includes(category)
-        : true;
-      const matchesBrand = selectedBrands.length
-        ? selectedBrands.includes(brand)
-        : true;
+      const matchesCategory = selectedCategories.length ? selectedCategories.includes(category) : true;
+      const matchesBrand = selectedBrands.length ? selectedBrands.includes(brand) : true;
       const matchesPrice = selectedPrice.length
         ? selectedPrice.some((range) => {
-            if (range === "under-5000") return price < 5000;
-            if (range === "5000-10000") return price >= 5000 && price <= 10000;
-            if (range === "over-10000") return price > 10000;
-            return false;
+            switch (range) {
+              case "under-5000":
+                return price < 5000;
+              case "5000-10000":
+                return price >= 5000 && price <= 10000;
+              case "over-10000":
+                return price > 10000;
+              default:
+                return false;
+            }
           })
         : true;
-      const matchesGender = gender === "Kids";
-
-      return matchesCategory && matchesBrand && matchesPrice && matchesGender;
+      return matchesCategory && matchesBrand && matchesPrice && gender === "Kids";
     });
   }, [productData, selectedCategories, selectedBrands, selectedPrice]);
 
@@ -86,9 +88,11 @@ const KidsFashion = () => {
     );
   }, [productData]);
 
-  const brands = useMemo(() => Array.from(new Set(productData.map((p) => p.brand))), [productData]);
+  const brands = useMemo(() => {
+    return Array.from(new Set(productData.map((p) => p.brand)));
+  }, [productData]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="text-center text-gray-400">Loading products...</div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
@@ -104,6 +108,7 @@ const KidsFashion = () => {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
+        {/* Filter Section */}
         <div className="w-full lg:w-1/4 bg-gray-800 p-4 rounded-lg shadow-lg">
           <h2 className="text-xl font-bold mb-6 text-center border-b pb-2">Filters</h2>
 
@@ -147,16 +152,13 @@ const KidsFashion = () => {
                   onChange={() => handlePriceChange(range)}
                   className="mr-2 accent-teal-500"
                 />
-                {range === "under-5000"
-                  ? "Under ₹5000"
-                  : range === "5000-10000"
-                  ? "₹5000 - ₹10000"
-                  : "Over ₹10000"}
+                {range === "under-5000" ? "Under ₹5000" : range === "5000-10000" ? "₹5000 - ₹10000" : "Over ₹10000"}
               </label>
             ))}
           </div>
         </div>
 
+        {/* Product Section */}
         <div className="w-full lg:w-3/4">
           {filteredProducts.length === 0 ? (
             <p className="text-center text-gray-400">No products found</p>
