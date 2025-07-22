@@ -73,7 +73,7 @@ const App = () => {
         <Router>
           <ScrollToTop />
           <Navbar />
-          <main className="flex-1 pt-16 min-h-screen bg-gray-100">
+          <main className="flex-1 pt-16 min-h-screen bg-black text-white">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/signin" element={<SignIn />} />
