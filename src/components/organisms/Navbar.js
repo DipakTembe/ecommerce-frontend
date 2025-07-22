@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBagShopping, faUser, faSearch, faHeart, faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faTimes, faBagShopping, faUser, faSearch, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Navbar = () => {
   const navigate = useNavigate();
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("User");
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem("token");
@@ -29,119 +28,126 @@ const Navbar = () => {
           setUserName(res.data.username || "User");
           setIsLoggedIn(true);
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error("Auth Error:", err);
           handleLogout();
         });
     }
   }, [handleLogout]);
 
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
   return (
-    <nav className="fixed w-full z-20 top-0 left-0 bg-transparent backdrop-blur-md">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <nav className="fixed w-full z-20 top-0 left-0 bg-black/70 backdrop-blur-md text-white">
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
-        <div className="text-2xl font-bold text-white">
+        <div className="text-2xl font-bold">
           <Link to="/">Dipak</Link>
         </div>
 
-        {/* Hamburger Icon */}
-        <button
-          className="text-white md:hidden text-2xl focus:outline-none"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          <FontAwesomeIcon icon={menuOpen ? faTimes : faBars} />
-        </button>
-
-        {/* Search Bar */}
-        <div className="hidden md:block mx-4 flex-1 max-w-xs relative">
-          <input
-            type="text"
-            className="w-full p-3 pl-10 pr-4 rounded-full bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Search..."
-          />
-          <FontAwesomeIcon
-            icon={faSearch}
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-          />
+        {/* Hamburger Menu (Mobile) */}
+        <div className="md:hidden">
+          <button onClick={toggleMenu}>
+            <FontAwesomeIcon icon={isMenuOpen ? faTimes : faBars} size="lg" />
+          </button>
         </div>
 
-        {/* Desktop Menu */}
-        <ul className="hidden md:flex space-x-8 text-white font-medium items-center">
-          {/* Links with Dropdowns */}
-          {["MEN", "WOMEN", "KIDS", "HOME & LIVING"].map((item, index) => (
-            <li key={index} className="relative group">
+        {/* Links (Desktop) */}
+        <ul className="hidden md:flex space-x-6 font-medium">
+          {["MEN", "WOMEN", "KIDS", "HOME & LIVING"].map((item) => (
+            <li key={item}>
               <Link
-                to={
-                  item === "MEN" ? "/mens-fashion" :
-                  item === "WOMEN" ? "/womens-fashion" :
-                  item === "KIDS" ? "/kids-fashion" :
-                  "/home-fashion"
-                }
+                to={`/${item.toLowerCase().replace(/ & /g, "-").replace(/ /g, "-")}`}
                 className="hover:text-gray-300 transition"
               >
                 {item}
               </Link>
-              {/* Example dropdown, customize as needed */}
-              <div className="absolute left-0 top-full mt-2 w-64 bg-white text-black rounded-lg shadow-lg opacity-0 invisible scale-95 transform transition-all duration-300 group-hover:opacity-100 group-hover:visible group-hover:scale-100">
-                <ul className="p-4 space-y-2">
-                  <li><Link to="/" className="block px-4 py-2 rounded hover:bg-gray-100 transition">Subcategory 1</Link></li>
-                  <li><Link to="/" className="block px-4 py-2 rounded hover:bg-gray-100 transition">Subcategory 2</Link></li>
-                </ul>
-              </div>
             </li>
           ))}
+        </ul>
 
-          {/* Wishlist */}
+        {/* Right Actions */}
+        <div className="hidden md:flex items-center space-x-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="bg-gray-800 text-white p-2 rounded-full pl-10 focus:ring-2 focus:ring-blue-500"
+            />
+            <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-2.5 text-gray-400" />
+          </div>
+
           {isLoggedIn && (
-            <Link to="/wishlistPage" className="hover:text-gray-300 transition flex items-center">
-              <FontAwesomeIcon icon={faHeart} className="mr-1" /> Wishlist
+            <Link to="/wishlistPage" className="hover:text-gray-300">
+              <FontAwesomeIcon icon={faHeart} />
             </Link>
           )}
 
-          {/* Cart */}
-          <Link to="/cart" className="hover:text-gray-300 transition flex items-center">
-            <FontAwesomeIcon icon={faBagShopping} className="mr-1" /> Cart
+          <Link to="/cart" className="hover:text-gray-300">
+            <FontAwesomeIcon icon={faBagShopping} />
           </Link>
 
-          {/* Profile or SignIn */}
           {isLoggedIn ? (
             <div className="relative group">
-              <button className="flex items-center hover:text-gray-300 transition">
-                <FontAwesomeIcon icon={faUser} className="mr-1" />
-                {`Welcome, ${userName}`}
+              <button className="hover:text-gray-300 flex items-center">
+                <FontAwesomeIcon icon={faUser} className="mr-1" /> {userName}
               </button>
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white text-black rounded-lg shadow-lg opacity-0 invisible transform scale-95 transition-all duration-300 group-hover:opacity-100 group-hover:visible group-hover:scale-100">
-                <ul className="p-2 space-y-2">
-                  <li><Link to="/order" className="block px-4 py-2 hover:bg-gray-100">Orders</Link></li>
-                  <li><Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link></li>
-                  <li><button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-gray-100">Logout</button></li>
+              <div className="absolute right-0 mt-2 bg-white text-black rounded shadow-lg hidden group-hover:block">
+                <ul className="p-2 space-y-1">
+                  <li><Link to="/order" className="block hover:bg-gray-100 px-4 py-2">Orders</Link></li>
+                  <li><Link to="/profile" className="block hover:bg-gray-100 px-4 py-2">Profile</Link></li>
+                  <li>
+                    <button onClick={handleLogout} className="block w-full text-left hover:bg-gray-100 px-4 py-2">
+                      Logout
+                    </button>
+                  </li>
                 </ul>
               </div>
             </div>
           ) : (
-            <Link to="/signin" className="hover:text-gray-300 transition">
-              Sign In
-            </Link>
+            <Link to="/signin" className="hover:text-gray-300">Sign In</Link>
           )}
-        </ul>
+        </div>
       </div>
 
       {/* Mobile Menu */}
-      {menuOpen && (
-        <div className="md:hidden bg-black text-white space-y-4 px-4 py-4">
-          <Link to="/mens-fashion" onClick={() => setMenuOpen(false)}>MEN</Link>
-          <Link to="/womens-fashion" onClick={() => setMenuOpen(false)}>WOMEN</Link>
-          <Link to="/kids-fashion" onClick={() => setMenuOpen(false)}>KIDS</Link>
-          <Link to="/home-fashion" onClick={() => setMenuOpen(false)}>HOME & LIVING</Link>
-          <Link to="/cart" onClick={() => setMenuOpen(false)}>Cart</Link>
-          {isLoggedIn && <Link to="/wishlistPage" onClick={() => setMenuOpen(false)}>Wishlist</Link>}
-          {isLoggedIn ? (
-            <>
-              <Link to="/profile" onClick={() => setMenuOpen(false)}>Profile</Link>
-              <button onClick={() => { handleLogout(); setMenuOpen(false); }}>Logout</button>
-            </>
-          ) : (
-            <Link to="/signin" onClick={() => setMenuOpen(false)}>Sign In</Link>
-          )}
+      {isMenuOpen && (
+        <div className="md:hidden bg-black/90 text-white px-4 py-4 space-y-4">
+          {["MEN", "WOMEN", "KIDS", "HOME & LIVING"].map((item) => (
+            <Link
+              key={item}
+              to={`/${item.toLowerCase().replace(/ & /g, "-").replace(/ /g, "-")}`}
+              onClick={toggleMenu}
+              className="block hover:text-gray-300"
+            >
+              {item}
+            </Link>
+          ))}
+
+          <div className="border-t border-gray-700 pt-4">
+            <Link to="/cart" onClick={toggleMenu} className="block hover:text-gray-300 mb-2">
+              <FontAwesomeIcon icon={faBagShopping} className="mr-2" /> Cart
+            </Link>
+            {isLoggedIn && (
+              <Link to="/wishlistPage" onClick={toggleMenu} className="block hover:text-gray-300 mb-2">
+                <FontAwesomeIcon icon={faHeart} className="mr-2" /> Wishlist
+              </Link>
+            )}
+            {isLoggedIn ? (
+              <>
+                <Link to="/profile" onClick={toggleMenu} className="block hover:text-gray-300 mb-2">
+                  <FontAwesomeIcon icon={faUser} className="mr-2" /> Profile
+                </Link>
+                <button onClick={() => { handleLogout(); toggleMenu(); }} className="block hover:text-gray-300">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link to="/signin" onClick={toggleMenu} className="block hover:text-gray-300">
+                Sign In
+              </Link>
+            )}
+          </div>
         </div>
       )}
     </nav>
