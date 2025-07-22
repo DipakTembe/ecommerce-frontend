@@ -2,8 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 
-// Use backend URL from environment variable
-const backendURL = process.env.REACT_APP_BACKEND_URL;
+// Use backend URL from environment variable (for fallback only)
+const backendURL = process.env.REACT_APP_API_BASE_URL;
 const fallbackImage = `${backendURL}/images/default-image.jpg`;
 
 const ProductGrid = ({ products, error, loading }) => {
@@ -30,7 +30,7 @@ const ProductGrid = ({ products, error, loading }) => {
             {/* Product Image */}
             <div className="relative mb-4">
               <img
-                src={product.imageUrl ? `${backendURL}${product.imageUrl}` : fallbackImage}
+                src={product.imageUrl || fallbackImage}
                 alt={product.name || "Product image"}
                 className="w-full h-48 object-cover rounded-md group-hover:scale-110 transition-transform duration-300 ease-in-out"
                 onError={(e) => {
