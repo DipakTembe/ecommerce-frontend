@@ -1,14 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaStar } from "react-icons/fa"; // Importing the star icon from react-icons
+import { FaStar } from "react-icons/fa";
+
+// Use backend URL from environment variable
+const backendURL = process.env.REACT_APP_BACKEND_URL;
+const fallbackImage = `${backendURL}/images/default-image.jpg`;
 
 const ProductGrid = ({ products, error, loading }) => {
-  const fallbackImage = "http://localhost:5001/images/default-image.jpg"; // Replace with your fallback image URL
-
   if (loading) {
-    return (
-      <div className="text-center text-gray-500">Loading products...</div>
-    );
+    return <div className="text-center text-gray-500">Loading products...</div>;
   }
 
   if (error) {
@@ -30,12 +30,12 @@ const ProductGrid = ({ products, error, loading }) => {
             {/* Product Image */}
             <div className="relative mb-4">
               <img
-                src={product.imageUrl || fallbackImage} // Use imageUrl or fallback
-                alt={product.name || 'Product image'} // Fallback alt text
+                src={product.imageUrl ? `${backendURL}${product.imageUrl}` : fallbackImage}
+                alt={product.name || "Product image"}
                 className="w-full h-48 object-cover rounded-md group-hover:scale-110 transition-transform duration-300 ease-in-out"
                 onError={(e) => {
-                  e.target.onerror = null; // Prevent infinite loop
-                  e.target.src = fallbackImage; // Replace with fallback image
+                  e.target.onerror = null;
+                  e.target.src = fallbackImage;
                 }}
               />
 
@@ -58,12 +58,11 @@ const ProductGrid = ({ products, error, loading }) => {
             </div>
 
             {/* Product Details */}
-            <h3 className="text-white font-bold">{product.brand || 'Unknown Brand'}</h3>
-            <p className="text-gray-400">{product.type || 'No Type'}</p>
+            <h3 className="text-white font-bold">{product.brand || "Unknown Brand"}</h3>
+            <p className="text-gray-400">{product.type || "No Type"}</p>
             <div className="flex items-center justify-between">
               <p className="text-teal-400">{`₹${product.price || 0}`}</p>
 
-              {/* Discounted Price (if available) */}
               {product.discount && (
                 <span className="text-red-500 line-through">{`₹${product.originalPrice}`}</span>
               )}

@@ -21,48 +21,38 @@ const CheckoutPage = () => {
 
   const navigate = useNavigate();
 
-  const fallbackImage = "http://localhost:5001/images/default-image.jpg"; 
+  const fallbackImage = `${process.env.REACT_APP_BACKEND_URL}/images/default-image.jpg`;
 
-  // Load cart from localStorage when the component mounts
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCartItems(storedCart);
     calculateTotalPrice(storedCart);
   }, []);
 
-  // Calculate the total price of items in the cart
   const calculateTotalPrice = (items) => {
     const total = items.reduce((sum, item) => {
       const price = parseFloat(item.price) || 0;
       const quantity = parseInt(item.quantity, 10) || 0;
       return sum + price * quantity;
     }, 0);
-    setTotalPrice(total.toFixed(2)); 
+    setTotalPrice(total.toFixed(2));
   };
 
-  // Handle shipping details change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setShippingDetails({ ...shippingDetails, [name]: value });
   };
 
-  // Handle token expiration check
   const checkTokenExpiration = (token) => {
     try {
       const decodedToken = jwtDecode(token);
-      const currentTime = Math.floor(Date.now() / 1000); 
-
-      if (decodedToken.exp < currentTime) {
-        return true; // Token expired
-      } else {
-        return false; // Token valid
-      }
+      const currentTime = Math.floor(Date.now() / 1000);
+      return decodedToken.exp < currentTime;
     } catch (error) {
-      return true; // Token invalid or expired
+      return true;
     }
   };
 
-  // Form validation
   const validateForm = () => {
     const { name, email, address, phone, city, zipCode } = shippingDetails;
     if (!name || !email || !address || !phone || !city || !zipCode) {
@@ -73,7 +63,6 @@ const CheckoutPage = () => {
     return true;
   };
 
-  // Handle order submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -96,7 +85,6 @@ const CheckoutPage = () => {
     try {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.id;
-
       if (!userId) {
         alert("User not found in token.");
         navigate("/login");
@@ -106,14 +94,13 @@ const CheckoutPage = () => {
       setLoading(true);
 
       const orderData = {
-        userId: userId,
+        userId,
         items: cartItems,
         totalPrice,
         shippingDetails,
       };
-// console.log(orderData);
-      const response = await apiWithToken('/orders/create', 'POST', orderData);
-      // console.log(response);
+
+      const response = await apiWithToken("/orders/create", "POST", orderData);
       localStorage.setItem("orderDetails", JSON.stringify(response.data));
 
       setShowSuccessModal(true);
@@ -147,7 +134,6 @@ const CheckoutPage = () => {
           </div>
         ) : (
           <div>
-            {/* Cart Items Review */}
             <div className="space-y-6">
               <h2 className="text-2xl text-gray-800 font-semibold">Cart Summary</h2>
               {cartItems.map((item) => (
@@ -157,12 +143,12 @@ const CheckoutPage = () => {
                 >
                   <div className="flex items-center space-x-6">
                     <img
-                      src={item.imageUrl || fallbackImage} 
+                      src={item.imageUrl || fallbackImage}
                       alt={item.name}
                       className="w-24 h-24 object-cover rounded-lg shadow-sm"
                       onError={(e) => {
-                        e.target.onerror = null; 
-                        e.target.src = fallbackImage; 
+                        e.target.onerror = null;
+                        e.target.src = fallbackImage;
                       }}
                     />
                     <div>
@@ -176,16 +162,16 @@ const CheckoutPage = () => {
               ))}
             </div>
 
-            {/* Shipping Form */}
             <form onSubmit={handleSubmit} className="space-y-6 mt-6">
               <h2 className="text-2xl text-gray-800 font-semibold">Shipping Details</h2>
 
-              {/* Form Fields */}
-              {['name', 'email', 'address', 'phone', 'city', 'zipCode'].map((field) => (
+              {["name", "email", "address", "phone", "city", "zipCode"].map((field) => (
                 <div key={field}>
-                  <label htmlFor={field} className="block text-gray-700">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+                  <label htmlFor={field} className="block text-gray-700">
+                    {field.charAt(0).toUpperCase() + field.slice(1)}
+                  </label>
                   <input
-                    type={field === 'email' ? 'email' : 'text'}
+                    type={field === "email" ? "email" : "text"}
                     id={field}
                     name={field}
                     value={shippingDetails[field]}
@@ -196,18 +182,17 @@ const CheckoutPage = () => {
                 </div>
               ))}
 
-              {/* Display Error Message */}
               {errorMessage && (
                 <p className="text-red-600 text-sm">{errorMessage}</p>
               )}
 
-              {/* Total Price */}
               <div className="mt-4 flex justify-between items-center">
                 <p className="text-lg text-gray-800 font-semibold">Total Price</p>
-                <p className="text-xl text-gray-800 font-semibold">₹{totalPrice.toLocaleString("en-IN")}</p>
+                <p className="text-xl text-gray-800 font-semibold">
+                  ₹{totalPrice.toLocaleString("en-IN")}
+                </p>
               </div>
 
-              {/* Place Order Button */}
               <div className="mt-8 flex justify-center">
                 <button
                   type="submit"
@@ -221,12 +206,13 @@ const CheckoutPage = () => {
           </div>
         )}
 
-        {/* Success Modal */}
         {showSuccessModal && (
           <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm text-center">
               <h2 className="text-2xl text-green-600 font-semibold">Order Placed Successfully!</h2>
-              <p className="mt-4 text-gray-600">Thank you for your purchase. We'll send you an email confirmation shortly.</p>
+              <p className="mt-4 text-gray-600">
+                Thank you for your purchase. We'll send you an email confirmation shortly.
+              </p>
             </div>
           </div>
         )}

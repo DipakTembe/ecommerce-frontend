@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const backendURL = process.env.REACT_APP_BACKEND_URL;
+
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -8,11 +10,10 @@ const ProductList = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:5001/api/products')
+      .get(`${backendURL}/api/products`)
       .then((response) => {
-        // Check if response.data is an array
         if (Array.isArray(response.data)) {
-          setProducts(response.data); // Set products if it's an array
+          setProducts(response.data);
         } else {
           setError('Invalid data format from server');
         }
@@ -27,7 +28,7 @@ const ProductList = () => {
 
   if (loading) return <div className="text-center py-4">Loading...</div>;
   if (error) return <div className="text-center py-4 text-red-500">{error}</div>;
-  if (products.length === 0) return <div className="text-center py-4">No products available</div>; // Handle case when no products are returned
+  if (products.length === 0) return <div className="text-center py-4">No products available</div>;
 
   return (
     <div className="p-6">
@@ -35,7 +36,7 @@ const ProductList = () => {
       <ul>
         {products.map((product) => (
           <li key={product._id} className="mb-4">
-            <h2 className="text-xl font-semibold">{product.name || 'Unnamed Product'}</h2>
+            <h2 className="text-xl font-semibold">{product.brand || 'Unnamed Product'}</h2>
             <p className="text-gray-600">{product.description || 'No description available'}</p>
             <p className="text-teal-500">{`₹${product.price || 'N/A'}`}</p>
           </li>
