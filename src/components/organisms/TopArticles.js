@@ -28,7 +28,7 @@ const TopArticles = () => {
 
   return (
     <div className="top-products mt-8">
-      <h2 className="text-3xl font-semibold text-gray-800 mb-4 text-center">Top Products</h2>
+<h2 className="text-3xl font-semibold text-white mb-4 text-center">Top Products</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 py-6">
         {products.map((product) => (
           <div

@@ -50,7 +50,7 @@ const ImageGallery = () => {
 
     return (
         <div className="flex flex-col items-center">
-            <h2 className="text-3xl font-semibold text-gray-800 mb-4 text-center">Global Brands</h2>
+            <h2 className="text-3xl font-semibold text-white mb-4 text-center">Global Brands</h2>
 
             {/* Image Row */}
             <div className="grid grid-cols-6 w-full">
