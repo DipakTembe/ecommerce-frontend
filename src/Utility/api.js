@@ -2,10 +2,9 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001/api';
 
-// Get Token from localStorage
 const getToken = () => localStorage.getItem('token');
 
-// Create Axios instance
+// Axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -13,14 +12,14 @@ const api = axios.create({
   },
 });
 
-// API call with Token
+// ✅ Function that works with: apiWithToken("/endpoint", "POST", data)
 export const apiWithToken = async (url, method = 'GET', data = {}, config = {}) => {
   const token = getToken();
 
-  if (!token) throw new Error('Authentication token is missing. Please log in.');
+  if (!token) throw new Error('Authentication token missing. Please log in.');
 
   try {
-    const response = await api({
+    const response = await api.request({
       url,
       method,
       data,
@@ -30,36 +29,25 @@ export const apiWithToken = async (url, method = 'GET', data = {}, config = {}) 
       ...config,
     });
 
-    if (response.status >= 200 && response.status < 300) {
-      return response.data;
-    } else {
-      throw new Error(response.data.message || 'API responded with an unexpected error.');
-    }
+    return response;
   } catch (error) {
-    const errorMessage = error.response?.data?.message || error.message || 'Unknown API error.';
-    console.error('API With Token Error:', errorMessage);
-    throw new Error(errorMessage);
+    console.error('API With Token Error:', error?.response?.data || error.message);
+    throw error;
   }
 };
 
-// API call without Token
 export const apiWithoutToken = async (url, method = 'GET', data = {}, config = {}) => {
   try {
-    const response = await api({
+    const response = await api.request({
       url,
       method,
       data,
       ...config,
     });
 
-    if (response.status >= 200 && response.status < 300) {
-      return response.data;
-    } else {
-      throw new Error(response.data.message || 'API responded with an unexpected error.');
-    }
+    return response;
   } catch (error) {
-    const errorMessage = error.response?.data?.message || error.message || 'Unknown API error.';
-    console.error('API Without Token Error:', errorMessage);
-    throw new Error(errorMessage);
+    console.error('API Without Token Error:', error?.response?.data || error.message);
+    throw error;
   }
 };

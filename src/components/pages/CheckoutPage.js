@@ -100,7 +100,8 @@ const CheckoutPage = () => {
         shippingDetails,
       };
 
-      const response = await apiWithToken("/orders/create", "POST", orderData);
+      const response = await apiWithToken('/api/orders/create', 'POST', orderData);
+
       localStorage.setItem("orderDetails", JSON.stringify(response.data));
 
       setShowSuccessModal(true);
