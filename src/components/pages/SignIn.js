@@ -71,8 +71,9 @@ const SignIn = () => {
               value={email}
               onChange={handleChange}
               placeholder="Enter your email"
-              className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black bg-white placeholder-gray-500"
             />
+
           </div>
 
           <div className="mb-6 relative">
@@ -85,8 +86,9 @@ const SignIn = () => {
               value={password}
               onChange={handleChange}
               placeholder="Enter your password"
-              className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black bg-white placeholder-gray-500"
             />
+
             <button
               type="button"
               onClick={togglePasswordVisibility}

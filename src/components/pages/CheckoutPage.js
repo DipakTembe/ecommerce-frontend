@@ -177,7 +177,8 @@ const CheckoutPage = () => {
                     name={field}
                     value={shippingDetails[field]}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 text-black bg-white placeholder-gray-500"
+
                     required
                   />
                 </div>

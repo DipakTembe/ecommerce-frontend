@@ -77,7 +77,7 @@ const SignUp = () => {
       if (otpResponse.status === 201) {
         // Store the JWT token after successful registration
         localStorage.setItem("token", otpResponse.data.token);
-        
+
         setSuccessMessage("Sign Up Successful! Redirecting...");
 
         setTimeout(() => {
@@ -138,7 +138,8 @@ const SignUp = () => {
                 name="otp"
                 value={formData.otp}
                 onChange={handleChange}
-                className="w-full p-3 mt-2 border border-gray-300 rounded-lg"
+                className="w-full p-3 mt-2 border border-gray-300 rounded-lg text-black bg-white placeholder-gray-500"
+
                 placeholder="Enter the OTP sent to your email"
                 required
               />
