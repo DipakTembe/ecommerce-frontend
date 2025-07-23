@@ -4,40 +4,48 @@ import { FaTrashAlt } from "react-icons/fa";
 
 const WishlistPage = () => {
   const [wishlist, setWishlist] = useState([]);
-  
-  // Fallback image URL
-  const fallbackImage = "http://localhost:5001/images/default-image.jpg";
+
+  // Use backend URL from environment variable or default to localhost
+  const BASE_IMAGE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5001";
+  const fallbackImage = `${BASE_IMAGE_URL}/images/default-image.jpg`;
 
   useEffect(() => {
-    // Retrieve wishlist from localStorage when the component mounts
+    // Retrieve wishlist from localStorage and clean it
     const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-    console.log(storedWishlist); // Log the wishlist to check the imageUrl
-    setWishlist(storedWishlist);
+    const cleanedWishlist = storedWishlist.filter(
+      (item) => item && item._id && item.name && item.imageUrl
+    );
+    localStorage.setItem("wishlist", JSON.stringify(cleanedWishlist));
+    setWishlist(cleanedWishlist);
   }, []);
 
-  // Handle remove item from wishlist
   const handleRemoveFromWishlist = (id) => {
     const updatedWishlist = wishlist.filter((item) => item._id !== id);
     setWishlist(updatedWishlist);
-    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist)); // Update localStorage
+    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
   };
 
-  // Handle move item to cart
   const handleMoveToCart = (item) => {
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existingItemIndex = storedCart.findIndex(cartItem => cartItem._id === item._id);
+    const existingItemIndex = storedCart.findIndex((cartItem) => cartItem._id === item._id);
 
     if (existingItemIndex >= 0) {
       storedCart[existingItemIndex].quantity += 1;
     } else {
-      storedCart.push({ ...item, quantity: 1 });
+      storedCart.push({
+        _id: item._id,
+        name: item.name,
+        price: item.price,
+        imageUrl: item.imageUrl,
+        quantity: 1,
+      });
     }
 
     localStorage.setItem("cart", JSON.stringify(storedCart));
 
     const updatedWishlist = wishlist.filter((wishlistItem) => wishlistItem._id !== item._id);
     setWishlist(updatedWishlist);
-    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist)); // Update localStorage
+    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
   };
 
   if (!wishlist.length) {
@@ -45,7 +53,9 @@ const WishlistPage = () => {
       <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-purple-700 via-indigo-700 to-blue-700">
         <div className="text-center text-gray-200 p-6">
           <h1 className="text-3xl font-semibold mb-4">Your Wishlist is Empty</h1>
-          <p className="text-xl mb-6">Start adding products to your wishlist to save them for later!</p>
+          <p className="text-xl mb-6">
+            Start adding products to your wishlist to save them for later!
+          </p>
           <Link to="/" className="text-xl text-blue-500 hover:text-blue-400 font-semibold">
             Explore Products
           </Link>
@@ -68,15 +78,14 @@ const WishlistPage = () => {
               className="bg-gray-800 p-6 rounded-lg shadow-lg transform transition-all hover:scale-105 hover:shadow-2xl duration-300 max-w-xl mx-auto"
             >
               <div className="relative">
-                {/* Image Container */}
                 <div className="w-56 h-64 mx-auto mb-6">
                   <img
-                    src={item.imageUrl ? `http://localhost:5001${item.imageUrl}` : fallbackImage}
+                    src={item.imageUrl ? `${BASE_IMAGE_URL}${item.imageUrl}` : fallbackImage}
                     alt={item.name}
                     className="w-full h-full object-cover rounded-lg"
                     onError={(e) => {
-                      e.target.onerror = null;  // Prevent infinite loop
-                      e.target.src = fallbackImage;  // Use fallback image on error
+                      e.target.onerror = null;
+                      e.target.src = fallbackImage;
                     }}
                   />
                 </div>
@@ -96,7 +105,6 @@ const WishlistPage = () => {
                 <p className="text-sm text-gray-400">{item.type}</p>
               </div>
 
-              {/* Move to Cart Button */}
               <div className="mt-6">
                 <button
                   onClick={() => handleMoveToCart(item)}
