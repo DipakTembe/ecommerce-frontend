@@ -5,12 +5,11 @@ import { FaTrashAlt } from "react-icons/fa";
 const WishlistPage = () => {
   const [wishlist, setWishlist] = useState([]);
 
-  // Use backend URL from environment variable or default to localhost
-  const BASE_IMAGE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5001";
+  // ✅ Correct syntax for CRA environment variable
+  const BASE_IMAGE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
   const fallbackImage = `${BASE_IMAGE_URL}/images/default-image.jpg`;
 
   useEffect(() => {
-    // Retrieve wishlist from localStorage and clean it
     const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
     const cleanedWishlist = storedWishlist.filter(
       (item) => item && item._id && item.name && item.imageUrl

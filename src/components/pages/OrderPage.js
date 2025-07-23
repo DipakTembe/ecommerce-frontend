@@ -8,7 +8,6 @@ const OrderPage = () => {
   const navigate = useNavigate();
   const { orderId } = useParams();
 
-  // Use backend URL from .env for fallback image
   const fallbackImage = `${process.env.REACT_APP_API_BASE_URL}/images/default-image.jpg`;
 
   const storedOrderDetails = useMemo(() => {

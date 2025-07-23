@@ -6,7 +6,6 @@ const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
-  // Use backend URL from env for fallback image
   const fallbackImage = `${process.env.REACT_APP_API_BASE_URL}/images/default-image.jpg`;
 
   useEffect(() => {
@@ -42,14 +41,13 @@ const CartPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-800 via-indigo-700 to-purple-600 py-8 pt-24">
-      <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-xl space-y-8">
+    <div className="min-h-screen bg-gradient-to-b from-blue-800 via-indigo-700 to-purple-600 py-8 pt-24 px-4">
+      <div className="max-w-4xl mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-xl space-y-8">
         <h1 className="text-4xl font-semibold text-center text-gray-800">Your Cart</h1>
 
         {cartItems.length === 0 ? (
           <div className="flex flex-col items-center space-y-6">
             <p className="text-xl text-gray-600">Your cart is empty.</p>
-            <p className="text-lg text-gray-500">Start adding items to your cart!</p>
             <Link
               to="/"
               className="px-8 py-4 bg-blue-600 text-white text-lg rounded-full hover:bg-blue-500 transition duration-300"
@@ -58,23 +56,23 @@ const CartPage = () => {
             </Link>
           </div>
         ) : (
-          <div>
+          <>
             <p className="text-lg text-center text-gray-600">
               You have {cartItems.length} {cartItems.length === 1 ? "item" : "items"} in your cart.
             </p>
 
-            {/* Cart Item List */}
+            {/* Cart Items */}
             <div className="space-y-6">
               {cartItems.map((item) => (
                 <div
                   key={`${item._id}-${item.quantity}`}
-                  className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+                  className="flex flex-col sm:flex-row justify-between items-center bg-gray-50 p-4 rounded-lg shadow-md hover:shadow-lg transition duration-300"
                 >
-                  <div className="flex items-center space-x-6">
+                  <div className="flex items-center space-x-4 sm:space-x-6">
                     <img
                       src={item.imageUrl || fallbackImage}
                       alt={item.name}
-                      className="w-24 h-24 object-cover rounded-lg shadow-sm"
+                      className="w-24 h-24 object-cover rounded-lg"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = fallbackImage;
@@ -82,24 +80,24 @@ const CartPage = () => {
                     />
                     <div>
                       <p className="text-xl font-medium text-gray-800">{item.name}</p>
-                      <p className="text-lg text-gray-500">
-                        ₹{parseFloat(item.price).toLocaleString("en-IN")}
-                      </p>
-                      <p className="text-sm text-gray-400">Size: {item.size}</p>
+                      <p className="text-lg text-gray-500">₹{Number(item.price).toFixed(2)}</p>
+                      <p className="text-sm text-gray-400">Size: {item.size || "Free Size"}</p>
 
-                      {/* Quantity Adjuster */}
+                      {/* Quantity Controls */}
                       <div className="flex items-center space-x-4 mt-2">
                         <button
                           onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
-                          className="bg-gray-500 text-white px-3 py-1 rounded-lg hover:bg-gray-600"
+                          className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600 disabled:opacity-50"
                           disabled={item.quantity <= 1}
+                          aria-label="Decrease Quantity"
                         >
                           -
                         </button>
-                        <p className="text-lg text-gray-600">{item.quantity}</p>
+                        <span className="text-lg">{item.quantity}</span>
                         <button
                           onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
-                          className="bg-gray-500 text-white px-3 py-1 rounded-lg hover:bg-gray-600"
+                          className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
+                          aria-label="Increase Quantity"
                         >
                           +
                         </button>
@@ -107,10 +105,10 @@ const CartPage = () => {
                     </div>
                   </div>
 
-                  {/* Remove Button */}
                   <button
                     onClick={() => handleRemoveFromCart(item._id)}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200"
+                    className="mt-4 sm:mt-0 bg-red-500 text-white p-2 rounded hover:bg-red-600 transition duration-200"
+                    aria-label="Remove from Cart"
                   >
                     <FaTrashAlt />
                   </button>
@@ -118,24 +116,21 @@ const CartPage = () => {
               ))}
             </div>
 
-            {/* Cart Summary */}
-            <div className="mt-6 flex justify-between items-center">
-              <p className="text-lg text-gray-800 font-semibold">Total Price</p>
-              <p className="text-xl text-gray-800 font-semibold">
-                ₹{parseFloat(totalPrice).toLocaleString("en-IN")}
-              </p>
+            {/* Total and Checkout */}
+            <div className="mt-6 flex justify-between items-center text-lg font-semibold text-gray-800">
+              <span>Total Price:</span>
+              <span>₹{Number(totalPrice).toLocaleString("en-IN")}</span>
             </div>
 
-            {/* Checkout Button */}
             <div className="mt-8 flex justify-center">
               <Link
                 to="/checkout"
-                className="px-12 py-4 bg-green-600 text-white text-lg rounded-lg shadow-md hover:bg-green-500 transition duration-300"
+                className="px-12 py-4 bg-green-600 text-white text-lg rounded-lg hover:bg-green-500 transition duration-300"
               >
                 Proceed to Checkout
               </Link>
             </div>
-          </div>
+          </>
         )}
       </div>
     </div>
