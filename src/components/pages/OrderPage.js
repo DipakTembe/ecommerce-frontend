@@ -8,7 +8,8 @@ const OrderPage = () => {
   const navigate = useNavigate();
   const { orderId } = useParams();
 
-  const fallbackImage = "http://localhost:5001/images/default-image.jpg";
+  // Use backend URL from .env for fallback image
+  const fallbackImage = `${process.env.REACT_APP_API_BASE_URL}/images/default-image.jpg`;
 
   const storedOrderDetails = useMemo(() => {
     return JSON.parse(localStorage.getItem("orderDetails"));
@@ -36,11 +37,15 @@ const OrderPage = () => {
       <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-xl space-y-8">
         <h1 className="text-4xl font-semibold text-center text-gray-800">Order Details</h1>
 
+        {/* Order Info */}
         <div className="space-y-6">
           <h2 className="text-2xl text-gray-800 font-semibold">Order ID: {orderDetails._id}</h2>
-          <p className="text-xl text-gray-600">Thank you for your purchase! Your order has been placed successfully.</p>
+          <p className="text-xl text-gray-600">
+            Thank you for your purchase! Your order has been placed successfully.
+          </p>
         </div>
 
+        {/* Ordered Items */}
         <div className="space-y-6">
           <h3 className="text-2xl text-gray-800 font-semibold">Ordered Items</h3>
           {orderDetails.items?.length > 0 ? (
@@ -61,7 +66,9 @@ const OrderPage = () => {
                   />
                   <div>
                     <p className="text-xl font-medium text-gray-800">{item.name}</p>
-                    <p className="text-lg text-gray-500">₹{item.price?.toLocaleString("en-IN")}</p>
+                    <p className="text-lg text-gray-500">
+                      ₹{parseFloat(item.price)?.toLocaleString("en-IN") || "0"}
+                    </p>
                     {item.size && <p className="text-sm text-gray-400">Size: {item.size}</p>}
                     <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
                     <div className="flex items-center mt-2">
@@ -77,6 +84,7 @@ const OrderPage = () => {
           )}
         </div>
 
+        {/* Shipping Info */}
         <div className="space-y-6">
           <h3 className="text-2xl text-gray-800 font-semibold">Shipping Information</h3>
           <div className="space-y-2 text-gray-700">
@@ -89,13 +97,15 @@ const OrderPage = () => {
           </div>
         </div>
 
+        {/* Total */}
         <div className="mt-4 flex justify-between items-center">
           <p className="text-lg text-gray-800 font-semibold">Total Price</p>
           <p className="text-xl text-gray-800 font-semibold">
-            ₹{orderDetails.totalPrice ? orderDetails.totalPrice.toLocaleString("en-IN") : "0"}
+            ₹{parseFloat(orderDetails.totalPrice)?.toLocaleString("en-IN") || "0"}
           </p>
         </div>
 
+        {/* Button */}
         <div className="mt-8 flex justify-center">
           <button
             onClick={() => navigate("/")}

@@ -6,49 +6,43 @@ const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
-  // Fallback image URL
-  const fallbackImage = "http://localhost:5001/images/default-image.jpg";
+  // Use backend URL from env for fallback image
+  const fallbackImage = `${process.env.REACT_APP_API_BASE_URL}/images/default-image.jpg`;
 
-  // Load cart from localStorage when the component mounts
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCartItems(storedCart);
     calculateTotalPrice(storedCart);
   }, []);
 
-  // Calculate the total price of items in the cart
   const calculateTotalPrice = (items) => {
     const total = items.reduce((sum, item) => {
       const price = parseFloat(item.price) || 0;
       const quantity = parseInt(item.quantity, 10) || 0;
       return sum + price * quantity;
     }, 0);
-    setTotalPrice(total.toFixed(2)); // Round to 2 decimal places for currency formatting
+    setTotalPrice(total.toFixed(2));
   };
 
-  // Handle item removal from cart
   const handleRemoveFromCart = (id) => {
     const updatedCart = cartItems.filter((item) => item._id !== id);
     setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart)); // Update localStorage
-    calculateTotalPrice(updatedCart); // Recalculate total price after removal
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    calculateTotalPrice(updatedCart);
   };
 
-  // Handle item quantity change
   const handleQuantityChange = (id, newQuantity) => {
-    if (newQuantity <= 0) return; // Don't allow quantity to be less than 1
-
+    if (newQuantity <= 0) return;
     const updatedCart = cartItems.map((item) =>
       item._id === id ? { ...item, quantity: newQuantity } : item
     );
     setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart)); // Update localStorage
-    calculateTotalPrice(updatedCart); // Recalculate total price after quantity change
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    calculateTotalPrice(updatedCart);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-800 via-indigo-700 to-purple-600 py-8 pt-24">
-      {/* Main container */}
       <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-xl space-y-8">
         <h1 className="text-4xl font-semibold text-center text-gray-800">Your Cart</h1>
 
@@ -73,7 +67,7 @@ const CartPage = () => {
             <div className="space-y-6">
               {cartItems.map((item) => (
                 <div
-                  key={`${item._id}-${item.quantity}`} // Ensure the key is unique
+                  key={`${item._id}-${item.quantity}`}
                   className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
                 >
                   <div className="flex items-center space-x-6">
@@ -88,7 +82,9 @@ const CartPage = () => {
                     />
                     <div>
                       <p className="text-xl font-medium text-gray-800">{item.name}</p>
-                      <p className="text-lg text-gray-500">₹{item.price.toLocaleString("en-IN")}</p>
+                      <p className="text-lg text-gray-500">
+                        ₹{parseFloat(item.price).toLocaleString("en-IN")}
+                      </p>
                       <p className="text-sm text-gray-400">Size: {item.size}</p>
 
                       {/* Quantity Adjuster */}
@@ -125,7 +121,9 @@ const CartPage = () => {
             {/* Cart Summary */}
             <div className="mt-6 flex justify-between items-center">
               <p className="text-lg text-gray-800 font-semibold">Total Price</p>
-              <p className="text-xl text-gray-800 font-semibold">₹{totalPrice.toLocaleString("en-IN")}</p>
+              <p className="text-xl text-gray-800 font-semibold">
+                ₹{parseFloat(totalPrice).toLocaleString("en-IN")}
+              </p>
             </div>
 
             {/* Checkout Button */}

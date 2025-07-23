@@ -6,46 +6,44 @@ const ImageGallery = () => {
             id: 1,
             url: "/images/us-polo.webp",
             description: "Trending Footwear",
-            boldDescription: "Shop Now!", // New bold description
+            boldDescription: "Shop Now!",
             brandLogo: "images/us-polo-logo.jpg",
         },
         {
             id: 2,
             url: "/images/levis.avif",
             description: "Bestselling casuals",
-            boldDescription: "Seasonal Sale", // New bold description
+            boldDescription: "Seasonal Sale",
             brandLogo: "/images/levis-logo.png",
         },
         {
             id: 3,
             url: "/images/chanel-bag.webp",
             description: "International Picks",
-            boldDescription: "Limited Edition", // New bold description
+            boldDescription: "Limited Edition",
             brandLogo: "/images/chanel-logo.png",
         },
-
         {
             id: 4,
             url: "/images/ray-ban-sunglasses.webp",
             description: "Stylish Sunglasses",
-            boldDescription: "Best Seller", // New bold description
+            boldDescription: "Best Seller",
             brandLogo: "/images/ray-ban.png",
         },
         {
             id: 5,
             url: "/images/fossil.jpg",
             description: "Latest Watches",
-            boldDescription: "New Arrivals", // New bold description
+            boldDescription: "New Arrivals",
             brandLogo: "/images/fossil-logo.png",
         },
         {
             id: 6,
             url: "/images/blazer.jpg",
             description: "Work-Ready Style",
-            boldDescription: "Exclusive Offer", // New bold description
+            boldDescription: "Exclusive Offer",
             brandLogo: "/images/allen-solly-logo.png",
         },
-
     ];
 
     return (
@@ -85,7 +83,7 @@ const ImageGallery = () => {
             {/* Description Row */}
             <div className="grid grid-cols-6 w-full">
                 {images.map((image) => (
-                    <div key={image.id} className="text-center p-2 text-gray-700 text-sm">
+                    <div key={image.id} className="text-center p-2 text-white text-sm">
                         {image.description}
                     </div>
                 ))}
@@ -96,7 +94,7 @@ const ImageGallery = () => {
                 {images.map((image) => (
                     <div
                         key={image.id}
-                        className="text-center p-2 text-gray-800 font-bold text-lg"
+                        className="text-center p-2 text-white font-bold text-lg"
                     >
                         {image.boldDescription}
                     </div>
