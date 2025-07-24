@@ -10,6 +10,7 @@ const KidsFashion = () => {
   const [selectedPrice, setSelectedPrice] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
 
   const api = axios.create({
     baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -70,17 +71,16 @@ const KidsFashion = () => {
             }
           })
         : true;
-      return matchesCategory && matchesBrand && matchesPrice && gender === "Kids";
+
+      return matchesCategory && matchesBrand && matchesPrice && gender.toLowerCase().includes("kids");
     });
   }, [productData, selectedCategories, selectedBrands, selectedPrice]);
 
-  const groupedProducts = useMemo(() => {
-    return {
-      "Boy Clothing": filteredProducts.filter((p) => p.category === "Boy Clothing"),
-      "Girl Clothing": filteredProducts.filter((p) => p.category === "Girl Clothing"),
-      Accessories: filteredProducts.filter((p) => p.category === "Accessories"),
-    };
-  }, [filteredProducts]);
+  const groupedProducts = useMemo(() => ({
+    "Boy Clothing": filteredProducts.filter((p) => p.category === "Boy Clothing"),
+    "Girl Clothing": filteredProducts.filter((p) => p.category === "Girl Clothing"),
+    Accessories: filteredProducts.filter((p) => p.category === "Accessories"),
+  }), [filteredProducts]);
 
   const categories = useMemo(() => {
     return Array.from(new Set(productData.map((p) => p.category))).filter((cat) =>
@@ -89,33 +89,49 @@ const KidsFashion = () => {
   }, [productData]);
 
   const brands = useMemo(() => {
-    return Array.from(new Set(productData.map((p) => p.brand)));
+    return Array.from(new Set(productData.filter((p) => p.gender?.toLowerCase().includes("kids")).map((p) => p.brand)));
   }, [productData]);
 
-  if (loading) return <div className="text-center text-gray-400">Loading products...</div>;
-  if (error) return <div className="text-center text-red-500">{error}</div>;
+  if (loading) return <div className="text-center text-gray-400 pt-24">Loading products...</div>;
+  if (error) return <div className="text-center text-red-500 pt-24">{error}</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8 pt-24 bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100">
-      <div className="mb-4 text-lg text-gray-300">
-        <Link to="/" className="text-teal-500 hover:underline">Home</Link> /
-        <span className="text-teal-500"> Kids Fashion</span>
+    <div className="container mx-auto px-4 py-10 pt-24 bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100">
+      {/* Breadcrumb */}
+      <div className="mb-4 text-sm text-gray-400">
+        <Link to="/" className="text-teal-400 hover:underline">Home</Link> / 
+        <span className="text-gray-200 ml-1">Kids Fashion</span>
       </div>
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-100">Kids Fashion</h1>
-        <p className="text-lg text-gray-400">{filteredProducts.length} items available</p>
+      {/* Header */}
+      <div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+        <div>
+          <h1 className="text-3xl font-extrabold">Kids Fashion</h1>
+          <p className="text-gray-400 text-sm">{filteredProducts.length} items found</p>
+        </div>
+        <button
+          className="sm:hidden inline-block bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition"
+          onClick={() => setShowFilters(!showFilters)}
+        >
+          {showFilters ? "Hide Filters" : "Show Filters"}
+        </button>
       </div>
 
+      {/* Main Layout */}
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* Filter Section */}
-        <div className="w-full lg:w-1/4 bg-gray-800 p-4 rounded-lg shadow-lg">
-          <h2 className="text-xl font-bold mb-6 text-center border-b pb-2">Filters</h2>
+        {/* Filter Sidebar */}
+        <aside
+          className={`w-full lg:w-1/4 bg-gray-800 p-4 rounded-lg shadow-lg transition-all duration-300 ${
+            showFilters ? "block" : "hidden sm:block"
+          }`}
+        >
+          <h2 className="text-xl font-bold mb-6 text-center border-b border-gray-600 pb-2">Filters</h2>
 
+          {/* Category Filter */}
           <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-2">Category</h3>
+            <h3 className="text-md font-semibold mb-2">Category</h3>
             {categories.map((category) => (
-              <label key={category} className="block text-sm mb-1">
+              <label key={category} className="block text-sm mb-1 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={selectedCategories.includes(category)}
@@ -127,10 +143,11 @@ const KidsFashion = () => {
             ))}
           </div>
 
+          {/* Brand Filter */}
           <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-2">Brand</h3>
+            <h3 className="text-md font-semibold mb-2">Brand</h3>
             {brands.map((brand) => (
-              <label key={brand} className="block text-sm mb-1">
+              <label key={brand} className="block text-sm mb-1 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={selectedBrands.includes(brand)}
@@ -142,35 +159,42 @@ const KidsFashion = () => {
             ))}
           </div>
 
+          {/* Price Filter */}
           <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-2">Price</h3>
+            <h3 className="text-md font-semibold mb-2">Price</h3>
             {["under-5000", "5000-10000", "over-10000"].map((range) => (
-              <label key={range} className="block text-sm mb-1">
+              <label key={range} className="block text-sm mb-1 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={selectedPrice.includes(range)}
                   onChange={() => handlePriceChange(range)}
                   className="mr-2 accent-teal-500"
                 />
-                {range === "under-5000" ? "Under ₹5000" : range === "5000-10000" ? "₹5000 - ₹10000" : "Over ₹10000"}
+                {range === "under-5000"
+                  ? "Under ₹5000"
+                  : range === "5000-10000"
+                  ? "₹5000 - ₹10000"
+                  : "Over ₹10000"}
               </label>
             ))}
           </div>
-        </div>
+        </aside>
 
-        {/* Product Section */}
-        <div className="w-full lg:w-3/4">
+        {/* Product Display */}
+        <main className="w-full lg:w-3/4">
           {filteredProducts.length === 0 ? (
-            <p className="text-center text-gray-400">No products found</p>
+            <div className="text-center text-gray-400 mt-8">No products match your filters.</div>
           ) : (
             Object.keys(groupedProducts).map((category) => (
-              <div key={category} className="mb-8">
-                <h2 className="text-xl font-semibold mb-4">{category}</h2>
-                <ProductGrid products={groupedProducts[category]} />
-              </div>
+              groupedProducts[category].length > 0 && (
+                <div key={category} className="mb-8">
+                  <h2 className="text-xl font-semibold mb-4">{category}</h2>
+                  <ProductGrid products={groupedProducts[category]} />
+                </div>
+              )
             ))
           )}
-        </div>
+        </main>
       </div>
     </div>
   );
