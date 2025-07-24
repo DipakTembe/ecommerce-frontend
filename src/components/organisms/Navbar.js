@@ -1,6 +1,13 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTimes, faBagShopping, faUser, faSearch, faHeart } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faTimes,
+  faBagShopping,
+  faUser,
+  faSearch,
+  faHeart,
+} from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -9,6 +16,8 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("User");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownTimeout = useRef(null);
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem("token");
@@ -37,7 +46,17 @@ const Navbar = () => {
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
-  // Correct nav links matching your App.js routes
+  const handleMouseEnter = () => {
+    clearTimeout(dropdownTimeout.current);
+    setShowDropdown(true);
+  };
+
+  const handleMouseLeave = () => {
+    dropdownTimeout.current = setTimeout(() => {
+      setShowDropdown(false);
+    }, 200);
+  };
+
   const navLinks = [
     { name: "MEN", path: "/mens-fashion" },
     { name: "WOMEN", path: "/womens-fashion" },
@@ -81,7 +100,10 @@ const Navbar = () => {
               className="bg-gray-800 text-white p-2 rounded-full pl-10 focus:ring-2 focus:ring-blue-500"
               aria-label="Search"
             />
-            <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-2.5 text-gray-400" />
+            <FontAwesomeIcon
+              icon={faSearch}
+              className="absolute left-3 top-2.5 text-gray-400"
+            />
           </div>
 
           {/* Wishlist icon (only if logged in) */}
@@ -98,33 +120,55 @@ const Navbar = () => {
 
           {/* User profile or sign in */}
           {isLoggedIn ? (
-            <div className="relative group">
-              <button className="hover:text-gray-300 flex items-center" aria-haspopup="true" aria-expanded="false">
+            <div
+              className="relative"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <button
+                className="hover:text-gray-300 flex items-center"
+                aria-haspopup="true"
+                aria-expanded={showDropdown}
+              >
                 <FontAwesomeIcon icon={faUser} className="mr-1" /> {userName}
               </button>
-              <div className="absolute right-0 mt-2 bg-white text-black rounded shadow-lg hidden group-hover:block min-w-[150px] z-50">
-                <ul className="p-2 space-y-1">
-                  <li>
-                    <Link to="/order" className="block hover:bg-gray-100 px-4 py-2">
-                      Orders
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/profile" className="block hover:bg-gray-100 px-4 py-2">
-                      Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left hover:bg-gray-100 px-4 py-2"
-                      type="button"
-                    >
-                      Logout
-                    </button>
-                  </li>
-                </ul>
-              </div>
+
+              {showDropdown && (
+                <div className="absolute right-0 mt-2 bg-white text-black rounded shadow-lg min-w-[150px] z-50">
+                  <ul className="p-2 space-y-1">
+                    <li>
+                      <Link
+                        to="/order"
+                        onClick={() => setShowDropdown(false)}
+                        className="block hover:bg-gray-100 px-4 py-2"
+                      >
+                        Orders
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/profile"
+                        onClick={() => setShowDropdown(false)}
+                        className="block hover:bg-gray-100 px-4 py-2"
+                      >
+                        Profile
+                      </Link>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setShowDropdown(false);
+                        }}
+                        className="block w-full text-left hover:bg-gray-100 px-4 py-2"
+                        type="button"
+                      >
+                        Logout
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
           ) : (
             <Link to="/signin" className="hover:text-gray-300">
