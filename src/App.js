@@ -23,6 +23,7 @@ import OrderPage from "./components/pages/OrderPage";
 import "./index.css";
 import axios from "axios";
 import { CartProvider } from "./Context/CartContext";
+import { UserProvider } from "./Context/UserContext"; // ✅ Added
 
 const App = () => {
   const [productData, setProductData] = useState([]);
@@ -69,32 +70,34 @@ const App = () => {
 
   return (
     <React.StrictMode>
-      <CartProvider>
-        <Router>
-          <ScrollToTop />
-          <Navbar />
-          <main className="flex-1 pt-16 min-h-screen bg-neutral-900 text-white">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/wishlistPage" element={<WishlistPage />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/profile/edit" element={<EditProfile />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/order/:orderId" element={<OrderPage />} />
-              <Route path="/mens-fashion" element={<MensFashion productData={productData} />} />
-              <Route path="/womens-fashion" element={<WomensFashion />} />
-              <Route path="/kids-fashion" element={<KidsFashion />} />
-              <Route path="/home-fashion" element={<HomeFashion />} />
-              <Route path="/product/:id" element={<ProductDetails />} />
-            </Routes>
-          </main>
-          <Footer />
-        </Router>
-      </CartProvider>
+      <UserProvider> {/* ✅ Wrap App with UserProvider */}
+        <CartProvider>
+          <Router>
+            <ScrollToTop />
+            <Navbar />
+            <main className="flex-1 pt-16 min-h-screen bg-neutral-900 text-white">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/wishlistPage" element={<WishlistPage />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/edit" element={<EditProfile />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/order/:orderId" element={<OrderPage />} />
+                <Route path="/mens-fashion" element={<MensFashion productData={productData} />} />
+                <Route path="/womens-fashion" element={<WomensFashion />} />
+                <Route path="/kids-fashion" element={<KidsFashion />} />
+                <Route path="/home-fashion" element={<HomeFashion />} />
+                <Route path="/product/:id" element={<ProductDetails />} />
+              </Routes>
+            </main>
+            <Footer />
+          </Router>
+        </CartProvider>
+      </UserProvider>
     </React.StrictMode>
   );
 };

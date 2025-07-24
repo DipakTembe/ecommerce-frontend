@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useContext,
+} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
@@ -11,11 +17,15 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-// ✅ Use the env variable here
+// ✅ Import UserContext (if you're using global auth state)
+import { UserContext } from "../../Context/UserContext"; // Adjust path as needed
+
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const { user, setUser } = useContext(UserContext); // ⬅️ Use global user if available
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("User");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,8 +36,9 @@ const Navbar = () => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
     setUserName("User");
+    setUser(null); // ⬅️ Clear context user
     navigate("/signin");
-  }, [navigate]);
+  }, [navigate, setUser]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -39,13 +50,14 @@ const Navbar = () => {
         .then((res) => {
           setUserName(res.data.username || "User");
           setIsLoggedIn(true);
+          setUser(res.data); // ⬅️ Save user in context
         })
         .catch((err) => {
           console.error("Auth Error:", err);
           handleLogout();
         });
     }
-  }, [handleLogout]);
+  }, [handleLogout, setUser]);
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
@@ -105,7 +117,11 @@ const Navbar = () => {
           </div>
 
           {isLoggedIn && (
-            <Link to="/wishlistPage" className="hover:text-gray-300" aria-label="Wishlist">
+            <Link
+              to="/wishlistPage"
+              className="hover:text-gray-300"
+              aria-label="Wishlist"
+            >
               <FontAwesomeIcon icon={faHeart} />
             </Link>
           )}
@@ -125,7 +141,7 @@ const Navbar = () => {
                 aria-haspopup="true"
                 aria-expanded={showDropdown}
               >
-                <FontAwesomeIcon icon={faUser} className="mr-1" /> {userName}
+                <FontAwesomeIcon icon={faUser} className="mr-1" /> Hello, {user?.name || userName}
               </button>
 
               {showDropdown && (
