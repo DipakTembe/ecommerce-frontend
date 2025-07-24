@@ -75,13 +75,11 @@ const SignUp = () => {
       });
 
       if (otpResponse.status === 201) {
-        // Store the JWT token after successful registration
         localStorage.setItem("token", otpResponse.data.token);
-
         setSuccessMessage("Sign Up Successful! Redirecting...");
 
         setTimeout(() => {
-          navigate("/"); // Redirect to the home page after successful registration
+          navigate("/");
         }, 2000);
       }
     } catch (error) {
@@ -112,7 +110,7 @@ const SignUp = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full p-3 mt-2 border border-gray-300 rounded-lg"
+                className="w-full p-3 mt-2 border border-gray-300 rounded-lg text-black bg-white placeholder-gray-500"
                 placeholder="Enter your email"
                 required
               />
@@ -139,7 +137,6 @@ const SignUp = () => {
                 value={formData.otp}
                 onChange={handleChange}
                 className="w-full p-3 mt-2 border border-gray-300 rounded-lg text-black bg-white placeholder-gray-500"
-
                 placeholder="Enter the OTP sent to your email"
                 required
               />
@@ -153,7 +150,7 @@ const SignUp = () => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                className="w-full p-3 mt-2 border border-gray-300 rounded-lg"
+                className="w-full p-3 mt-2 border border-gray-300 rounded-lg text-black bg-white placeholder-gray-500"
                 placeholder="Choose a username"
                 required
               />
@@ -168,7 +165,7 @@ const SignUp = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full p-3 mt-2 border border-gray-300 rounded-lg"
+                  className="w-full p-3 mt-2 border border-gray-300 rounded-lg text-black bg-white placeholder-gray-500"
                   placeholder="Create a password"
                   required
                 />
@@ -194,4 +191,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;  
+export default SignUp;
