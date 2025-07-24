@@ -19,6 +19,8 @@ const SignUp = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
 
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -38,7 +40,7 @@ const SignUp = () => {
     setSuccessMessage("");
 
     try {
-      const response = await axios.post("http://localhost:5001/api/otp/send-otp", {
+      const response = await axios.post(`${apiBaseUrl}/api/otp/send-otp`, {
         email: formData.email,
       });
 
@@ -67,7 +69,7 @@ const SignUp = () => {
         return;
       }
 
-      const otpResponse = await axios.post("http://localhost:5001/api/otp/verify-otp", {
+      const otpResponse = await axios.post(`${apiBaseUrl}/api/otp/verify-otp`, {
         email: formData.email,
         otp: formData.otp,
         password: formData.password,
