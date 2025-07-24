@@ -11,6 +11,9 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+// ✅ Use the env variable here
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
 const Navbar = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,7 +33,7 @@ const Navbar = () => {
     const token = localStorage.getItem("token");
     if (token) {
       axios
-        .get("http://localhost:5001/api/auth/me", {
+        .get(`${API_BASE_URL}/api/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -67,19 +70,16 @@ const Navbar = () => {
   return (
     <nav className="fixed w-full z-20 top-0 left-0 bg-black/70 backdrop-blur-md text-white">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        {/* Logo */}
         <div className="text-2xl font-bold">
           <Link to="/">Dipak</Link>
         </div>
 
-        {/* Hamburger Menu (Mobile) */}
         <div className="md:hidden">
           <button onClick={toggleMenu} aria-label="Toggle menu">
             <FontAwesomeIcon icon={isMenuOpen ? faTimes : faBars} size="lg" />
           </button>
         </div>
 
-        {/* Desktop Navigation Links */}
         <ul className="hidden md:flex space-x-6 font-medium">
           {navLinks.map(({ name, path }) => (
             <li key={name}>
@@ -90,9 +90,7 @@ const Navbar = () => {
           ))}
         </ul>
 
-        {/* Right side actions (desktop) */}
         <div className="hidden md:flex items-center space-x-4">
-          {/* Search input */}
           <div className="relative">
             <input
               type="text"
@@ -106,19 +104,16 @@ const Navbar = () => {
             />
           </div>
 
-          {/* Wishlist icon (only if logged in) */}
           {isLoggedIn && (
             <Link to="/wishlistPage" className="hover:text-gray-300" aria-label="Wishlist">
               <FontAwesomeIcon icon={faHeart} />
             </Link>
           )}
 
-          {/* Cart icon */}
           <Link to="/cart" className="hover:text-gray-300" aria-label="Cart">
             <FontAwesomeIcon icon={faBagShopping} />
           </Link>
 
-          {/* User profile or sign in */}
           {isLoggedIn ? (
             <div
               className="relative"
@@ -178,7 +173,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-black/90 text-white px-4 py-4 space-y-4">
           {navLinks.map(({ name, path }) => (
