@@ -98,11 +98,10 @@ const Navbar = () => {
             <li key={name}>
               <Link
                 to={path}
-                className={`transition ${
-                  location.pathname === path
+                className={`transition ${location.pathname === path
                     ? "text-teal-400 underline underline-offset-4"
                     : "hover:text-gray-300"
-                }`}
+                  }`}
               >
                 {name}
               </Link>
