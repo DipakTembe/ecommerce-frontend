@@ -202,6 +202,7 @@ const Navbar = () => {
                 </div>
               )}
             </div>
+            
           ) : (
             <Link to="/signin" className="hover:text-gray-300">
               Sign In
