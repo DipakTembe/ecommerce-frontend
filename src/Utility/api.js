@@ -51,3 +51,14 @@ export const apiWithoutToken = async (url, method = 'GET', data = {}, config = {
     throw error;
   }
 };
+
+// ✅ Search products by query (no token required)
+export const searchProducts = async (query) => {
+  try {
+    const response = await apiWithoutToken(`/products/search?q=${encodeURIComponent(query)}`, 'GET');
+    return response.data;
+  } catch (error) {
+    console.error('Search API error:', error?.response?.data || error.message);
+    return [];
+  }
+};

@@ -14,29 +14,30 @@ import {
   faSearch,
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-// ✅ Import UserContext (if you're using global auth state)
-import { UserContext } from "../../Context/UserContext"; // Adjust path as needed
+import { UserContext } from "../../Context/UserContext";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { user, setUser } = useContext(UserContext); // ⬅️ Use global user if available
+  const location = useLocation();
+  const { user, setUser } = useContext(UserContext);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("User");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const dropdownTimeout = useRef(null);
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
     setUserName("User");
-    setUser(null); // ⬅️ Clear context user
+    setUser(null);
     navigate("/signin");
   }, [navigate, setUser]);
 
@@ -50,7 +51,7 @@ const Navbar = () => {
         .then((res) => {
           setUserName(res.data.username || "User");
           setIsLoggedIn(true);
-          setUser(res.data); // ⬅️ Save user in context
+          setUser(res.data);
         })
         .catch((err) => {
           console.error("Auth Error:", err);
@@ -95,7 +96,14 @@ const Navbar = () => {
         <ul className="hidden md:flex space-x-6 font-medium">
           {navLinks.map(({ name, path }) => (
             <li key={name}>
-              <Link to={path} className="hover:text-gray-300 transition">
+              <Link
+                to={path}
+                className={`transition ${
+                  location.pathname === path
+                    ? "text-teal-400 underline underline-offset-4"
+                    : "hover:text-gray-300"
+                }`}
+              >
                 {name}
               </Link>
             </li>
@@ -107,12 +115,26 @@ const Navbar = () => {
             <input
               type="text"
               placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && searchQuery.trim()) {
+                  navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                  setSearchQuery("");
+                }
+              }}
               className="bg-gray-800 text-white p-2 rounded-full pl-10 focus:ring-2 focus:ring-blue-500"
               aria-label="Search"
             />
             <FontAwesomeIcon
               icon={faSearch}
-              className="absolute left-3 top-2.5 text-gray-400"
+              className="absolute left-3 top-2.5 text-gray-400 cursor-pointer"
+              onClick={() => {
+                if (searchQuery.trim()) {
+                  navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                  setSearchQuery("");
+                }
+              }}
             />
           </div>
 

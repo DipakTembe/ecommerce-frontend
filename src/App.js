@@ -20,10 +20,11 @@ import EditProfile from "./components/pages/EditProfile";
 import CartPage from "./components/pages/CartPage";
 import CheckoutPage from "./components/pages/CheckoutPage";
 import OrderPage from "./components/pages/OrderPage";
+import SearchResults from "./components/pages/SearchResults"; // ✅ NEW
 import "./index.css";
 import axios from "axios";
 import { CartProvider } from "./Context/CartContext";
-import { UserProvider } from "./Context/UserContext"; // ✅ Added
+import { UserProvider } from "./Context/UserContext";
 
 const App = () => {
   const [productData, setProductData] = useState([]);
@@ -70,7 +71,7 @@ const App = () => {
 
   return (
     <React.StrictMode>
-      <UserProvider> {/* ✅ Wrap App with UserProvider */}
+      <UserProvider>
         <CartProvider>
           <Router>
             <ScrollToTop />
@@ -92,6 +93,7 @@ const App = () => {
                 <Route path="/kids-fashion" element={<KidsFashion />} />
                 <Route path="/home-fashion" element={<HomeFashion />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
+                <Route path="/search" element={<SearchResults />} /> {/* ✅ NEW ROUTE */}
               </Routes>
             </main>
             <Footer />

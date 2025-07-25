@@ -43,9 +43,11 @@ const ProductGrid = ({ products, error, loading }) => {
               <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white text-sm p-2 rounded-md">
                 <p>
                   <FaStar className="inline text-yellow-400" /> {product.rating || 0} |{" "}
-                  {product.buyers >= 1000
-                    ? `${(product.buyers / 1000).toFixed(1)}k`
-                    : product.buyers || 0}
+                  {product.buyers
+                    ? product.buyers >= 1000
+                      ? `${(product.buyers / 1000).toFixed(1)}k`
+                      : product.buyers
+                    : 0}
                 </p>
               </div>
 
@@ -62,7 +64,6 @@ const ProductGrid = ({ products, error, loading }) => {
             <p className="text-gray-400">{product.type || "No Type"}</p>
             <div className="flex items-center justify-between">
               <p className="text-teal-400">{`₹${product.price || 0}`}</p>
-
               {product.discount && (
                 <span className="text-red-500 line-through">{`₹${product.originalPrice}`}</span>
               )}
