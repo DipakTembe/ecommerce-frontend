@@ -1,5 +1,6 @@
 // context/CartContext.js
 import React, { createContext, useContext, useState, useEffect } from "react";
+import PropTypes from "prop-types"; // ✅ Added
 
 // Create the CartContext
 const CartContext = createContext();
@@ -32,7 +33,6 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-
   // Function to remove item from the cart
   const removeFromCart = (id) => {
     setCartItems((prevCart) => prevCart.filter((item) => item._id !== id));
@@ -43,6 +43,11 @@ export const CartProvider = ({ children }) => {
       {children}
     </CartContext.Provider>
   );
+};
+
+// ✅ Added PropTypes to fix ESLint error
+CartProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 // Custom hook to access the cart context

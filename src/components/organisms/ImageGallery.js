@@ -103,17 +103,6 @@ const ImageGallery = () => {
                 ))}
             </div>
 
-            {/* Bold Descriptions */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 w-full mt-2">
-                {images.map((image) => (
-                    <div
-                        key={image.id}
-                        className="text-center p-2 text-white font-bold text-base"
-                    >
-                        {image.boldDescription}
-                    </div>
-                ))}
-            </div>
         </div>
     );
 };

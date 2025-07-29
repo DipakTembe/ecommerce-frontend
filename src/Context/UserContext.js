@@ -1,11 +1,11 @@
 import React, { createContext, useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import axios from "axios";
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-
   const apiBaseURL = process.env.REACT_APP_API_BASE_URL;
 
   // Fetch user from token
@@ -26,4 +26,9 @@ export const UserProvider = ({ children }) => {
       {children}
     </UserContext.Provider>
   );
+};
+
+// ✅ PropTypes to fix ESLint error
+UserProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };

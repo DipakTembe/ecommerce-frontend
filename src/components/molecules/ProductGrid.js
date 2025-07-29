@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 
@@ -73,6 +74,13 @@ const ProductGrid = ({ products, error, loading }) => {
       ))}
     </div>
   );
+};
+
+// ✅ PropTypes Validation
+ProductGrid.propTypes = {
+  products: PropTypes.arrayOf(PropTypes.object).isRequired,
+  error: PropTypes.string,
+  loading: PropTypes.bool.isRequired,
 };
 
 export default ProductGrid;

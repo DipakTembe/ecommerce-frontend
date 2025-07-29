@@ -73,6 +73,13 @@ const Navbar = () => {
     }, 200);
   };
 
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+    }
+  };
+
   const navLinks = [
     { name: "MEN", path: "/mens-fashion" },
     { name: "WOMEN", path: "/womens-fashion" },
@@ -82,26 +89,52 @@ const Navbar = () => {
 
   return (
     <nav className="fixed w-full z-20 top-0 left-0 bg-black/70 backdrop-blur-md text-white">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-2">
+        {/* Left: Logo */}
         <div className="text-2xl font-bold">
           <Link to="/">Dipak</Link>
         </div>
 
+        {/* Middle: Search Bar */}
+        <div className="flex-grow mx-2 max-w-xs sm:max-w-sm md:max-w-md">
+          <div className="relative w-full">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearch();
+              }}
+              className="w-full bg-gray-800 text-white p-2 rounded-full pl-10 focus:ring-2 focus:ring-blue-500 text-sm"
+              aria-label="Search"
+            />
+            <FontAwesomeIcon
+              icon={faSearch}
+              className="absolute left-3 top-3 text-gray-400 cursor-pointer"
+              onClick={handleSearch}
+            />
+          </div>
+        </div>
+
+        {/* Right: Toggle Menu */}
         <div className="md:hidden">
           <button onClick={toggleMenu} aria-label="Toggle menu">
             <FontAwesomeIcon icon={isMenuOpen ? faTimes : faBars} size="lg" />
           </button>
         </div>
 
-        <ul className="hidden md:flex space-x-6 font-medium">
+        {/* Desktop Navigation */}
+        <ul className="hidden md:flex space-x-6 font-medium ml-4">
           {navLinks.map(({ name, path }) => (
             <li key={name}>
               <Link
                 to={path}
-                className={`transition ${location.pathname === path
+                className={`transition ${
+                  location.pathname === path
                     ? "text-teal-400 underline underline-offset-4"
                     : "hover:text-gray-300"
-                  }`}
+                }`}
               >
                 {name}
               </Link>
@@ -109,34 +142,8 @@ const Navbar = () => {
           ))}
         </ul>
 
-        <div className="hidden md:flex items-center space-x-4">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && searchQuery.trim()) {
-                  navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-                  setSearchQuery("");
-                }
-              }}
-              className="bg-gray-800 text-white p-2 rounded-full pl-10 focus:ring-2 focus:ring-blue-500"
-              aria-label="Search"
-            />
-            <FontAwesomeIcon
-              icon={faSearch}
-              className="absolute left-3 top-2.5 text-gray-400 cursor-pointer"
-              onClick={() => {
-                if (searchQuery.trim()) {
-                  navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-                  setSearchQuery("");
-                }
-              }}
-            />
-          </div>
-
+        {/* Desktop Right Icons */}
+        <div className="hidden md:flex items-center space-x-4 ml-4">
           {isLoggedIn && (
             <Link
               to="/wishlistPage"
@@ -162,7 +169,8 @@ const Navbar = () => {
                 aria-haspopup="true"
                 aria-expanded={showDropdown}
               >
-                <FontAwesomeIcon icon={faUser} className="mr-1" /> Hello, {user?.name || userName}
+                <FontAwesomeIcon icon={faUser} className="mr-1" /> Hello,{" "}
+                {user?.name || userName}
               </button>
 
               {showDropdown && (
@@ -202,7 +210,6 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-            
           ) : (
             <Link to="/signin" className="hover:text-gray-300">
               Sign In
@@ -211,6 +218,7 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* Mobile Dropdown Menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-black/90 text-white px-4 py-4 space-y-4">
           {navLinks.map(({ name, path }) => (
