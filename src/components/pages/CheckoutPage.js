@@ -214,7 +214,7 @@ const CheckoutPage = () => {
             <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm text-center">
               <h2 className="text-2xl text-green-600 font-semibold">Order Placed Successfully!</h2>
               <p className="mt-4 text-gray-600">
-                Thank you for your purchase. We'll send you an email confirmation shortly.
+                Thank you for your purchase. We&#39;ll send you an email confirmation shortly.
               </p>
             </div>
           </div>

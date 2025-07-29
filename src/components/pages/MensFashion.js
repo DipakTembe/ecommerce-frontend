@@ -94,13 +94,14 @@ const MensFashion = () => {
       {/* Breadcrumbs */}
       <div className="mb-4 text-sm text-gray-400">
         <Link to="/" className="text-teal-400 hover:underline">Home</Link> / 
-        <span className="text-gray-200 ml-1">Men's Fashion</span>
+        <span className="text-gray-200 ml-1">Men&#39;s Fashion</span>
+
       </div>
 
       {/* Header */}
       <div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
         <div>
-          <h1 className="text-3xl font-extrabold">Men's Fashion</h1>
+          <h1 className="text-3xl font-extrabold">Men&#39;s </h1>
           <p className="text-gray-400 text-sm">{filteredProducts.length} items found</p>
         </div>
         <button
