@@ -20,14 +20,13 @@ import EditProfile from "./components/pages/EditProfile";
 import CartPage from "./components/pages/CartPage";
 import CheckoutPage from "./components/pages/CheckoutPage";
 import OrderPage from "./components/pages/OrderPage";
-import SearchResults from "./components/pages/SearchResults"; // ✅ NEW
+import SearchResults from "./components/pages/SearchResults";
 import "./index.css";
 import axios from "axios";
 import { CartProvider } from "./Context/CartContext";
 import { UserProvider } from "./Context/UserContext";
 
 const App = () => {
-  const [productData, setProductData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -37,9 +36,7 @@ const App = () => {
     const fetchProductData = async () => {
       try {
         const response = await axios.get(`${apiBaseURL}/api/products`);
-        if (Array.isArray(response.data)) {
-          setProductData(response.data);
-        } else {
+        if (!Array.isArray(response.data)) {
           throw new Error("Invalid product data received");
         }
       } catch (err) {
@@ -76,7 +73,6 @@ const App = () => {
           <Router>
             <ScrollToTop />
             <Navbar />
-            {/* ✅ Ensure proper padding to avoid overlap with fixed navbar */}
             <main className="flex-1 pt-16 min-h-screen bg-neutral-900 text-white overflow-x-hidden">
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -89,12 +85,12 @@ const App = () => {
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/order/:orderId" element={<OrderPage />} />
-                <Route path="/mens-fashion" element={<MensFashion productData={productData} />} />
+                <Route path="/mens-fashion" element={<MensFashion />} />
                 <Route path="/womens-fashion" element={<WomensFashion />} />
                 <Route path="/kids-fashion" element={<KidsFashion />} />
                 <Route path="/home-fashion" element={<HomeFashion />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
-                <Route path="/search" element={<SearchResults />} /> {/* ✅ NEW ROUTE */}
+                <Route path="/search" element={<SearchResults />} />
               </Routes>
             </main>
             <Footer />
