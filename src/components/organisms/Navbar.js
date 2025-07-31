@@ -55,8 +55,12 @@ const Navbar = () => {
         })
         .catch((err) => {
           console.error("Auth Error:", err);
-          handleLogout();
+          localStorage.removeItem("token");
+          setIsLoggedIn(false);
+          setUserName("User");
+          setUser(null);
         });
+
     }
   }, [handleLogout, setUser]);
 
@@ -130,11 +134,10 @@ const Navbar = () => {
             <li key={name}>
               <Link
                 to={path}
-                className={`transition ${
-                  location.pathname === path
+                className={`transition ${location.pathname === path
                     ? "text-teal-400 underline underline-offset-4"
                     : "hover:text-gray-300"
-                }`}
+                  }`}
               >
                 {name}
               </Link>
