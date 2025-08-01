@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -17,13 +16,13 @@ const Profile = () => {
     }
 
     axios
-      .get('http://localhost:5001/api/auth/me', {
+      .get(`${process.env.REACT_APP_API_BASE_URL}/api/auth/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
-        setUser(response.data); // Assuming the API returns user data
+        setUser(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -36,7 +35,7 @@ const Profile = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="loader"></div> {/* You can use any spinner or loader component */}
+        <div className="loader"></div>
       </div>
     );
   }

@@ -3,20 +3,17 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
     return (
-        <footer className="bg-gray-900 text-white py-8">
+        <footer className="bg-gray-900 text-white py-6 text-sm">
             <div className="container mx-auto px-4">
-                <div className="grid md:grid-cols-4 grid-cols-2 gap-8">
-                    {/* Column 1: Logo and Social Media Links */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                    {/* Column 1: Social Media */}
                     <div>
-                        <div className="text-2xl font-bold">
-                            <Link to="/">Dipak</Link>
-                        </div>
-                        <div className="mt-4 flex space-x-4">
-                            {/* Social Media Icons */}
+                        <h3 className="font-semibold text-base mb-2">Follow Us</h3>
+                        <div className="flex space-x-3 text-lg">
                             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-500">
                                 <i className="fab fa-facebook-f"></i>
                             </a>
-                            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-500">
+                            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-400">
                                 <i className="fab fa-twitter"></i>
                             </a>
                             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-500">
@@ -30,8 +27,8 @@ const Footer = () => {
 
                     {/* Column 2: Quick Links */}
                     <div>
-                        <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
-                        <ul>
+                        <h3 className="font-semibold text-base mb-2">Quick Links</h3>
+                        <ul className="space-y-1">
                             <li>
                                 <Link to="/about" className="text-gray-400 hover:text-white">About Us</Link>
                             </li>
@@ -49,8 +46,8 @@ const Footer = () => {
 
                     {/* Column 3: Categories */}
                     <div>
-                        <h3 className="font-semibold text-lg mb-4">Categories</h3>
-                        <ul>
+                        <h3 className="font-semibold text-base mb-2">Categories</h3>
+                        <ul className="space-y-1">
                             <li>
                                 <Link to="/mens-fashion" className="text-gray-400 hover:text-white">Men</Link>
                             </li>
@@ -68,18 +65,18 @@ const Footer = () => {
 
                     {/* Column 4: Contact */}
                     <div>
-                        <h3 className="font-semibold text-lg mb-4">Contact</h3>
-                        <ul>
-                            <li className="text-gray-400">Email: support@dipak.com</li>
-                            <li className="text-gray-400">Phone: +91 8329672473</li>
-                            <li className="text-gray-400">Address: Mumbai, India</li>
+                        <h3 className="font-semibold text-base mb-2">Contact</h3>
+                        <ul className="space-y-1 text-gray-400">
+                            <li>Email: support@example.com</li>
+                            <li>Phone: +91 8329672473</li>
+                            <li>Address: Mumbai, India</li>
                         </ul>
                     </div>
                 </div>
 
                 {/* Footer Bottom */}
-                <div className="mt-8 border-t border-gray-700 pt-4 text-center">
-                    <p className="text-sm text-gray-400">© 2024 Dipak. All Rights Reserved.</p>
+                <div className="mt-6 border-t border-gray-700 pt-3 text-center text-xs text-gray-500">
+                    © 2024 All Rights Reserved.
                 </div>
             </div>
         </footer>

@@ -10,21 +10,23 @@ const EditProfile = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
+  const API_BASE = process.env.REACT_APP_API_BASE_URL;
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/signin'); // Redirect to sign-in if token is not found
+      navigate('/signin');
       return;
     }
 
     axios
-      .get('http://localhost:5001/api/auth/me', {
+      .get(`${API_BASE}/api/auth/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
-        setUser(response.data); // Assuming the API returns user data
+        setUser(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -32,7 +34,7 @@ const EditProfile = () => {
         setError('Failed to fetch profile data');
         setLoading(false);
       });
-  }, [navigate]);
+  }, [navigate, API_BASE]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,21 +49,26 @@ const EditProfile = () => {
 
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/signin'); // Redirect to sign-in if token is not found
+      navigate('/signin');
       return;
     }
 
     axios
       .put(
-        'http://localhost:5001/api/auth/update-profile',
-        { username: user.username, email: user.email, address: user.address, mobile: user.mobile },
+        `${API_BASE}/api/auth/update-profile`,
+        {
+          username: user.username,
+          email: user.email,
+          address: user.address,
+          mobile: user.mobile,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       )
-      .then((response) => {
+      .then(() => {
         setSuccess('Profile updated successfully!');
         setIsSubmitting(false);
       })
@@ -102,7 +109,6 @@ const EditProfile = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
-              {/* Name Field */}
               <div className="flex flex-col">
                 <label htmlFor="username" className="font-medium text-gray-700">Name:</label>
                 <input
@@ -116,7 +122,6 @@ const EditProfile = () => {
                 />
               </div>
 
-              {/* Email Field */}
               <div className="flex flex-col">
                 <label htmlFor="email" className="font-medium text-gray-700">Email:</label>
                 <input
@@ -130,7 +135,6 @@ const EditProfile = () => {
                 />
               </div>
 
-              {/* Address Field */}
               <div className="flex flex-col">
                 <label htmlFor="address" className="font-medium text-gray-700">Address:</label>
                 <textarea
@@ -144,7 +148,6 @@ const EditProfile = () => {
                 />
               </div>
 
-              {/* Mobile Field */}
               <div className="flex flex-col">
                 <label htmlFor="mobile" className="font-medium text-gray-700">Mobile:</label>
                 <input
@@ -171,7 +174,7 @@ const EditProfile = () => {
             </div>
           </form>
 
-          <div className="mt-6 flex justify-between">
+          <div className="mt-6">
             <button
               onClick={() => navigate('/profile')}
               className="w-full py-2 px-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-300 ease-in-out"
